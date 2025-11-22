@@ -78,7 +78,7 @@ Default URLs
 
 Frontend → http://localhost:3000
 
-Backend → http://localhost:5000
+Backend → http://localhost:4000
 
 📡 API Endpoints
 Method	Endpoint	Description
