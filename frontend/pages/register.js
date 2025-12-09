@@ -15,10 +15,9 @@ export default function RegisterPage() {
 
   async function safeFetchJSON(res) {
     const text = await res.text();
-    try {
-      return text ? JSON.parse(text) : {};
-    } catch (parseErr) {
-      throw new Error(`Server returned non-JSON response (status ${res.status}):\n\n${text.slice(0,2000)}`);
+    try { return text ? JSON.parse(text) : {}; }
+    catch {
+      throw new Error(`Server non-JSON (status ${res.status}):\n${text}`);
     }
   }
 
@@ -38,22 +37,19 @@ export default function RegisterPage() {
       const res = await fetch(`${API_BASE}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // optional, but safe if backend sets cookies
+        credentials: 'include',
         body: JSON.stringify({ name, email, password })
       });
 
       const body = await safeFetchJSON(res);
 
       if (!res.ok) {
-        throw new Error(body.error || body.message || `Status ${res.status}`);
+        throw new Error(body.error || body.message);
       }
 
-      setSuccess('Registration successful — redirecting to login...');
-
-      // short delay so user sees success message
+      setSuccess('Registration successful — redirecting...');
       setTimeout(() => router.replace('/login'), 1200);
     } catch (error) {
-      console.error('register error:', error);
       setErr(error.message || 'Registration failed');
     } finally {
       setLoading(false);
@@ -63,32 +59,155 @@ export default function RegisterPage() {
   return (
     <>
       <Head><title>Register — Student Optimizer</title></Head>
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-6">
-        <div className="max-w-md w-full bg-white dark:bg-gray-800 p-6 rounded shadow">
-          <div className="flex items-center gap-4 mb-4">
-            <img src={HERO_IMAGE_BACKEND} alt="logo" className="w-14 h-14 object-cover rounded" />
+
+      {/* Cyberpunk Background */}
+      <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-black">
+        
+        {/* Grid */}
+        <div className="absolute inset-0 cyber-grid opacity-20"></div>
+
+        {/* Neon Pulses */}
+        <div className="absolute w-[450px] h-[450px] bg-fuchsia-600/20 rounded-full blur-3xl animate-pulse-slow -top-24 -left-10"></div>
+        <div className="absolute w-[550px] h-[550px] bg-cyan-500/20 rounded-full blur-3xl animate-pulse-slower bottom-0 right-0"></div>
+
+        {/* Neon Card */}
+        <div className="relative z-10 max-w-md w-full neon-border p-8 rounded-2xl bg-black/60 backdrop-blur-xl shadow-xl animate-fade-in-up">
+
+          {/* Header */}
+          <div className="flex items-center gap-4 mb-6">
+            <img
+              src={HERO_IMAGE_BACKEND}
+              alt="logo"
+              className="w-16 h-16 rounded-lg border border-cyan-400 shadow-lg animate-float"
+            />
             <div>
-              <h1 className="text-xl font-semibold">Register</h1>
-              <div className="text-xs text-gray-500 dark:text-gray-400">Create your account</div>
+              <h1 className="text-3xl font-bold text-cyan-300 drop-shadow-lg tracking-wider cyber-title">
+                REGISTER
+              </h1>
+              <div className="text-xs text-fuchsia-400 opacity-80 tracking-wide">
+                Create your account
+              </div>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" className="w-full p-2 border rounded dark:bg-gray-700" />
-            <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="w-full p-2 border rounded dark:bg-gray-700" />
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" className="w-full p-2 border rounded dark:bg-gray-700" />
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
 
-            {err && <div className="text-sm text-red-500 whitespace-pre-wrap">{err}</div>}
-            {success && <div className="text-sm text-green-600">{success}</div>}
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Name"
+              className="w-full p-3 text-cyan-200 bg-black/40 border border-cyan-600 rounded-lg
+              focus:ring-2 focus:ring-fuchsia-500 outline-none cyber-input"
+            />
 
-            <div className="flex gap-2">
-              <button type="submit" disabled={loading} className="px-4 py-2 bg-indigo-600 text-white rounded">
-                {loading ? 'Registering…' : 'Register'}
-              </button>
-              <button type="button" onClick={() => router.push('/login')} className="px-3 py-2 border rounded">Login</button>
-            </div>
+            <input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              className="w-full p-3 text-cyan-200 bg-black/40 border border-cyan-600 rounded-lg
+              focus:ring-2 focus:ring-fuchsia-500 outline-none cyber-input"
+            />
+
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              className="w-full p-3 text-cyan-200 bg-black/40 border border-cyan-600 rounded-lg
+              focus:ring-2 focus:ring-fuchsia-500 outline-none cyber-input"
+            />
+
+            {err && (
+              <div className="text-sm text-red-400 bg-red-500/10 p-2 rounded-lg animate-shake">
+                {err}
+              </div>
+            )}
+
+            {success && (
+              <div className="text-sm text-green-400 bg-green-500/10 p-2 rounded-lg animate-fade-in-up">
+                {success}
+              </div>
+            )}
+
+            {/* Buttons */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 rounded-lg bg-gradient-to-r from-fuchsia-600 to-cyan-500
+              text-black font-bold hover:opacity-90 transition transform hover:scale-[1.02] neon-btn"
+            >
+              {loading ? 'Registering…' : 'Register'}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => router.push('/login')}
+              className="w-full py-3 rounded-lg border border-cyan-400 text-cyan-300 hover:bg-cyan-400/10 transition"
+            >
+              Login
+            </button>
           </form>
         </div>
+
+        {/* Animations & Styling */}
+        <style jsx>{`
+          @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0); }
+          }
+          .animate-float { animation: float 4s ease-in-out infinite; }
+
+          @keyframes fade-in-up {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+          }
+          .animate-fade-in-up { animation: fade-in-up 0.7s ease-out; }
+
+          @keyframes pulse-slow {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.4; }
+          }
+          .animate-pulse-slow { animation: pulse-slow 7s infinite; }
+
+          @keyframes pulse-slower {
+            0%, 100% { opacity: 0.15; }
+            50% { opacity: 0.3; }
+          }
+          .animate-pulse-slower { animation: pulse-slower 11s infinite; }
+
+          @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+          }
+          .animate-shake { animation: shake 0.3s ease-in-out; }
+
+          .cyber-grid {
+            background-image:
+              linear-gradient(#0ff2 1px, transparent 1px),
+              linear-gradient(90deg, #f0f2 1px, transparent 1px);
+            background-size: 50px 50px;
+          }
+
+          .neon-border {
+            border: 2px solid #0ff5;
+            box-shadow: 0 0 20px #0ff4, inset 0 0 20px #0ff2;
+          }
+
+          .cyber-input {
+            box-shadow: inset 0 0 8px #0ff3;
+          }
+
+          .neon-btn {
+            box-shadow: 0 0 12px #f0f, 0 0 30px #0ff;
+          }
+
+          .cyber-title {
+            text-shadow: 0 0 8px #0ff, 0 0 20px #00eaff, 0 0 40px #0ff;
+          }
+        `}</style>
       </div>
     </>
   );
