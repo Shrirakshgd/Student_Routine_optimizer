@@ -1,4 +1,3 @@
-// pages/login.js
 import Head from 'next/head';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
@@ -10,11 +9,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [err, setErr] = useState('');
   const [loading, setLoading] = useState(false);
+  const [remember, setRemember] = useState(false);
 
   async function safeFetchJSON(res) {
     const text = await res.text();
-    try { return text ? JSON.parse(text) : {}; }
-    catch { throw new Error(`Server non-JSON (status ${res.status}):\n${text}`); }
+    try { return text ? JSON.parse(text) : {}; } catch (parseErr) {
+      throw new Error(`Server returned non-JSON response (status ${res.status}):\n\n${text.slice(0,2000)}`);
+    }
   }
 
   async function onSubmit(e) {
@@ -22,8 +23,8 @@ export default function LoginPage() {
     setErr('');
     setLoading(true);
 
-    if (!email.trim()) return setErr('Enter email'), setLoading(false);
-    if (!password.trim()) return setErr('Enter password'), setLoading(false);
+    if (!email?.trim()) { setErr('Enter email'); setLoading(false); return; }
+    if (!password?.trim()) { setErr('Enter password'); setLoading(false); return; }
 
     try {
       const res = await fetch(`${API_BASE}/api/auth/login`, {
@@ -34,11 +35,11 @@ export default function LoginPage() {
       });
 
       const body = await safeFetchJSON(res);
-      if (!res.ok) throw new Error(body.error || body.message);
-
+      if (!res.ok) throw new Error(body.error || body.message || `Status ${res.status}`);
       router.replace('/');
     } catch (e) {
-      setErr(e.message);
+      console.error('login error', e);
+      setErr(e.message || 'Login failed');
     } finally {
       setLoading(false);
     }
@@ -46,163 +47,109 @@ export default function LoginPage() {
 
   return (
     <>
-      <Head><title>Login — Student Optimizer</title></Head>
+      <Head>
+        <title>Login — Student Optimizer</title>
+      </Head>
 
-      {/* Background Cyberpunk Grid */}
-      <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-black">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 p-6">
+        <div className="w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
 
-        {/* Grid Lines */}
-        <div className="absolute inset-0 cyber-grid opacity-20"></div>
-
-        {/* Neon Flares */}
-        <div className="absolute w-96 h-96 bg-fuchsia-600/20 rounded-full blur-3xl animate-pulse-slow -top-20 -left-10"></div>
-        <div className="absolute w-[500px] h-[500px] bg-cyan-500/20 rounded-full blur-3xl animate-pulse-slower bottom-0 right-0"></div>
-
-        {/* Main Neon Card */}
-        <div className="relative z-10 w-full max-w-md neon-border p-8 rounded-2xl shadow-lg bg-black/60 backdrop-blur-xl animate-fade-in-up">
-
-          {/* Logo + Title */}
-          <div className="flex items-center gap-4 mb-6">
-            <img
-              src={HERO_IMAGE_BACKEND}
-              alt="logo"
-              className="w-16 h-16 rounded-lg shadow-lg border border-cyan-400 animate-float"
-            />
-            <div>
-              <h1 className="text-3xl font-bold text-cyan-300 drop-shadow-lg tracking-wider cyber-title">
-                STUDENT OPTIMIZER
-              </h1>
-              <p className="text-fuchsia-400 text-xs opacity-80 tracking-wide">
-                Adaptive learning intelligence
-              </p>
+          {/* Left: Illustration / Brand */}
+          <div className="hidden md:flex items-center justify-center p-6 rounded-2xl bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 shadow-lg transform hover:scale-[1.01] transition-all">
+            <div className="text-center text-white">
+              <img src={HERO_IMAGE_BACKEND} alt="logo" className="w-28 h-28 rounded-full object-cover mx-auto mb-4 ring-4 ring-white/20" />
+              <h2 className="text-2xl font-bold">Student Optimizer</h2>
+              <p className="mt-2 text-sm opacity-90">Smart scheduling · Study reminders · Personalized tips</p>
             </div>
           </div>
 
-          {/* Form */}
-          <form onSubmit={onSubmit} className="space-y-5">
-
-            {/* Email */}
-            <input
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-              className="w-full p-3 text-cyan-200 bg-black/40 border border-cyan-600 rounded-lg
-              focus:ring-2 focus:ring-fuchsia-500 outline-none cyber-input"
-            />
-
-            {/* Password */}
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              className="w-full p-3 text-cyan-200 bg-black/40 border border-cyan-600 rounded-lg
-              focus:ring-2 focus:ring-fuchsia-500 outline-none cyber-input"
-            />
-
-            {err && (
-              <div className="text-sm text-red-400 bg-red-500/10 p-2 rounded-lg animate-shake">
-                {err}
+          {/* Right: Form */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 sm:p-10">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h1 className="text-2xl font-semibold">Welcome back</h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Login to continue to your dashboard</p>
               </div>
-            )}
 
-            {/* Login Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 rounded-lg bg-gradient-to-r from-fuchsia-600 to-cyan-500
-              text-black font-bold hover:opacity-90 transition transform hover:scale-[1.02] neon-btn"
-            >
-              {loading ? 'Authenticating…' : 'Login'}
-            </button>
+              <div className="md:hidden">
+                <img src={HERO_IMAGE_BACKEND} alt="logo" className="w-12 h-12 rounded-full object-cover" />
+              </div>
+            </div>
 
-            {/* Register */}
-            <button
-              type="button"
-              onClick={() => router.push('/register')}
-              className="w-full py-3 rounded-lg border border-cyan-400 text-cyan-300 hover:bg-cyan-400/10 transition"
-            >
-              Register
-            </button>
+            <form onSubmit={onSubmit} className="space-y-4">
 
-          </form>
+              <label className="block">
+                <span className="text-xs font-medium text-gray-600 dark:text-gray-300">Email</span>
+                <div className="mt-1 relative">
+                  <svg className="w-5 h-5 absolute left-3 top-3 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 8l7.89 5.26a2 2 0 0 0 2.22 0L21 8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@school.edu"
+                    className="w-full pl-11 pr-3 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-400 transition"
+                    aria-label="Email"
+                  />
+                </div>
+              </label>
+
+              <label className="block">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-gray-600 dark:text-gray-300">Password</span>
+                  <a className="text-xs text-indigo-600 hover:underline" href="#">Forgot?</a>
+                </div>
+                <div className="mt-1 relative">
+                  <svg className="w-5 h-5 absolute left-3 top-3 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M7 11V7a5 5 0 0 1 10 0v4" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full pl-11 pr-3 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-transparent focus:outline-none focus:ring-2 focus:ring-indigo-400 transition"
+                    aria-label="Password"
+                  />
+                </div>
+              </label>
+
+              {err && <div className="text-sm text-red-500 whitespace-pre-wrap">{err}</div>}
+
+              <div className="flex items-center justify-between">
+                <label className="inline-flex items-center gap-2 text-sm">
+                  <input type="checkbox" checked={remember} onChange={() => setRemember(!remember)} className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
+                  <span className="text-gray-600 dark:text-gray-300">Remember me</span>
+                </label>
+
+                <div className="text-sm text-gray-500">New here? <button type="button" onClick={() => router.push('/register')} className="text-indigo-600 hover:underline">Create account</button></div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full inline-flex items-center justify-center gap-3 px-4 py-3 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium shadow-md hover:shadow-lg focus:outline-none disabled:opacity-60 transition"
+              >
+                {loading ? (
+                  <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" strokeOpacity="0.25" fill="none"/><path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" strokeWidth="4" strokeLinecap="round" fill="none"/></svg>
+                ) : null}
+                <span>{loading ? 'Logging in...' : 'Login'}</span>
+              </button>
+
+              <div className="flex items-center gap-3">
+                <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                <div className="text-xs text-gray-400">or continue with</div>
+                <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <button type="button" className="py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm flex items-center justify-center gap-2">Google</button>
+                <button type="button" className="py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm flex items-center justify-center gap-2">GitHub</button>
+              </div>
+
+              <p className="text-xs text-gray-400 text-center">By continuing you agree to our <a href="#" className="underline">Terms</a> and <a href="#" className="underline">Privacy</a>.</p>
+
+            </form>
+          </div>
+
         </div>
-
-        {/* Animations + Cyberpunk Styles */}
-        <style jsx>{`
-          /* Floating Logo Animation */
-          @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
-            100% { transform: translateY(0px); }
-          }
-          .animate-float {
-            animation: float 4s ease-in-out infinite;
-          }
-
-          /* Fade In Up */
-          @keyframes fade-in-up {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0px); }
-          }
-          .animate-fade-in-up {
-            animation: fade-in-up 0.7s ease-out;
-          }
-
-          /* Background Pulsing */
-          @keyframes pulse-slow {
-            0%, 100% { opacity: 0.2; }
-            50% { opacity: 0.4; }
-          }
-          .animate-pulse-slow {
-            animation: pulse-slow 7s ease-in-out infinite;
-          }
-
-          @keyframes pulse-slower {
-            0%, 100% { opacity: 0.15; }
-            50% { opacity: 0.3; }
-          }
-          .animate-pulse-slower {
-            animation: pulse-slower 11s ease-in-out infinite;
-          }
-
-          /* Shake on Error */
-          @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-4px); }
-            75% { transform: translateX(4px); }
-          }
-          .animate-shake {
-            animation: shake 0.3s ease-in-out;
-          }
-
-          /* Cyberpunk Grid Background */
-          .cyber-grid {
-            background-image:
-              linear-gradient(#0ff2 1px, transparent 1px),
-              linear-gradient(90deg, #f0f2 1px, transparent 1px);
-            background-size: 50px 50px;
-          }
-
-          /* Neon Card Border */
-          .neon-border {
-            border: 2px solid #0ff5;
-            box-shadow: 0px 0px 20px #0ff4, inset 0 0 20px #0ff2;
-          }
-
-          /* Cyberpunk Inputs */
-          .cyber-input {
-            box-shadow: inset 0 0 8px #0ff3;
-          }
-
-          .neon-btn {
-            box-shadow: 0 0 12px #f0f, 0 0 30px #0ff;
-          }
-
-          .cyber-title {
-            text-shadow: 0 0 8px #0ff, 0 0 20px #00eaff, 0 0 40px #0ff;
-          }
-        `}</style>
       </div>
     </>
   );

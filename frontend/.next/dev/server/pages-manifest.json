@@ -3,5 +3,5 @@
   "/_app": "pages/_app.js",
   "/_document": "pages/_document.js",
   "/login": "pages/login.js",
-  "/logout": "pages/logout.js"
+  "/register": "pages/register.js"
 }

@@ -1,6 +1,6 @@
 (globalThis.TURBOPACK || (globalThis.TURBOPACK = [])).push([
     typeof document === "object" ? document.currentScript : undefined,
-    {"otherChunks":["static/chunks/[root-of-the-server]__d40c4434._.js","static/chunks/9e883_next_dist_compiled_7638d890._.js","static/chunks/9e883_next_dist_shared_lib_8ad05970._.js","static/chunks/9e883_next_dist_client_fe082e00._.js","static/chunks/9e883_next_dist_4bfa5b9e._.js","static/chunks/9e883_next_8345c280._.js","static/chunks/9e883_react-dom_3d11c48e._.js","static/chunks/9e883_fedfea85._.js"],"runtimeModuleIds":["[project]/frontend/node_modules/next/dist/compiled/@next/react-refresh-utils/dist/runtime.js [client] (ecmascript)","[project]/frontend/node_modules/next/dist/client/next-dev-turbopack.js [client] (ecmascript)","[hmr-entry]/hmr-entry.js { ENTRY => \"[project]/frontend/pages/index\" }"]}
+    {"otherChunks":["static/chunks/9e883_next_dist_compiled_df94997f._.js","static/chunks/9e883_next_dist_shared_lib_8ad05970._.js","static/chunks/9e883_next_dist_client_fe082e00._.js","static/chunks/9e883_next_dist_4bfa5b9e._.js","static/chunks/9e883_next_8345c280._.js","static/chunks/9e883_react-dom_3d11c48e._.js","static/chunks/9e883_c5bc5046._.js","static/chunks/[root-of-the-server]__3ddcdc23._.js"],"runtimeModuleIds":["[project]/frontend/node_modules/next/dist/compiled/@next/react-refresh-utils/dist/runtime.js [client] (ecmascript)","[project]/frontend/node_modules/next/dist/client/next-dev-turbopack.js [client] (ecmascript)","[hmr-entry]/hmr-entry.js { ENTRY => \"[project]/frontend/pages/login\" }"]}
 ]);
 (() => {
 if (!Array.isArray(globalThis.TURBOPACK)) {
@@ -1833,4 +1833,4 @@ chunkListsToRegister.forEach(registerChunkList);
 })();
 
 
-//# sourceMappingURL=frontend_pages_index_9823a641._.js.map
+//# sourceMappingURL=frontend_pages_login_728678a8._.js.map

@@ -2,101 +2,52 @@
 import React from "react";
 import { useSettings } from "./SettingsModal";
 
+/**
+ * Props:
+ *  - data: object mapping YYYY-MM-DD -> number (minutes)
+ */
 export default function MiniBarChart({ data = {} }) {
-  // Access settings gracefully
+  // read settings (graceful)
   let settings = null;
   try {
-    settings = useSettings().settings;
+    const ctx = useSettings();
+    settings = ctx.settings;
   } catch (e) {
     settings = null;
   }
 
-  // Convert data to sorted arrays
+  // convert data to ordered array (last 7 days)
   const labels = Object.keys(data).sort();
   const values = labels.map((k) => Number(data[k] || 0));
   const max = Math.max(...values, 1);
 
+  // color adjustments based on theme/settings
+  const barBaseClass = settings && settings.theme === "dark" ? "bg-indigo-500" : "bg-indigo-300";
+
   return (
-    <div className="relative w-full h-28 flex items-end gap-2 p-2 neon-chart-container">
-
-      {/* If no data: show cyberpunk placeholder bars */}
-      {labels.length === 0 &&
+    <div className="w-full h-24 flex items-end gap-1">
+      {labels.length === 0 && (
+        // show placeholder columns if no data
         Array.from({ length: 7 }).map((_, i) => (
-          <div
-            key={i}
-            className="flex-1 flex items-end"
-          >
-            <div
-              className="w-full rounded-sm cyber-bar-placeholder"
-              style={{ height: `${(i + 1) * 10}%` }}
-            ></div>
+          <div key={i} className="flex-1 h-full flex items-end">
+            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-sm" style={{ height: `${(i + 1) * 8}%` }} />
           </div>
-        ))}
+        ))
+      )}
 
-      {/* Render actual bars */}
-      {labels.map((label, i) => {
-        const v = values[i];
+      {labels.map((l, idx) => {
+        const v = values[idx];
         const heightPct = (v / max) * 100;
-
         return (
-          <div key={label} className="flex-1 flex items-end">
+          <div key={l} className="flex-1 h-full flex items-end">
             <div
-              className="cyber-bar"
-              title={`${label}: ${v} min`}
-              style={{
-                height: `${heightPct}%`,
-                animationDelay: `${i * 0.08}s`,
-              }}
-            ></div>
+              title={`${l}: ${v.toFixed ? v.toFixed(0) : v}`}
+              className={`${barBaseClass} rounded-sm w-full`}
+              style={{ height: `${heightPct}%` }}
+            />
           </div>
         );
       })}
-
-      {/* Cyberpunk styling */}
-      <style jsx>{`
-        .neon-chart-container {
-          background: transparent;
-          position: relative;
-        }
-
-        /* CYBERPUNK GRADIENT BAR */
-        .cyber-bar {
-          width: 100%;
-          border-radius: 4px;
-          background: linear-gradient(to top, #ff2dfc, #00eaff);
-          box-shadow:
-            0 0 10px #00eaffaa,
-            0 0 20px #ff2dfc99,
-            inset 0 0 10px #00eaff55;
-          animation: rise 0.6s ease-out forwards;
-          transition: 0.2s ease;
-        }
-
-        .cyber-bar:hover {
-          box-shadow:
-            0 0 20px #00eaff,
-            0 0 30px #ff2dfc;
-          transform: scale(1.05);
-        }
-
-        /* Placeholder version (when no data) */
-        .cyber-bar-placeholder {
-          background: linear-gradient(to top, #1a1f2c, #293040);
-          box-shadow: inset 0 0 10px #00eaff22;
-        }
-
-        /* Smooth bar appearance animation */
-        @keyframes rise {
-          0% {
-            transform: translateY(20px) scaleY(0.2);
-            opacity: 0;
-          }
-          100% {
-            transform: translateY(0) scaleY(1);
-            opacity: 1;
-          }
-        }
-      `}</style>
     </div>
   );
 }
