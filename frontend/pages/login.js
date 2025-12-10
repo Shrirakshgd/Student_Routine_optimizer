@@ -9,7 +9,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [err, setErr] = useState('');
   const [loading, setLoading] = useState(false);
-  const [remember, setRemember] = useState(false);
 
   async function safeFetchJSON(res) {
     const text = await res.text();
@@ -48,60 +47,56 @@ export default function LoginPage() {
     <>
       <Head><title>Login — Student Optimizer</title></Head>
 
-      {/* Background Cyberpunk Grid */}
-      <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-black">
+      {/* Background */}
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-slate-900 to-black px-4">
 
-        {/* Grid Lines */}
-        <div className="absolute inset-0 cyber-grid opacity-20"></div>
-
-        {/* Neon Flares */}
-        <div className="absolute w-96 h-96 bg-fuchsia-600/20 rounded-full blur-3xl animate-pulse-slow -top-20 -left-10"></div>
-        <div className="absolute w-[500px] h-[500px] bg-cyan-500/20 rounded-full blur-3xl animate-pulse-slower bottom-0 right-0"></div>
-
-        {/* Main Neon Card */}
-        <div className="relative z-10 w-full max-w-md neon-border p-8 rounded-2xl shadow-lg bg-black/60 backdrop-blur-xl animate-fade-in-up">
+        {/* Card */}
+        <div className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl rounded-2xl p-8">
 
           {/* Logo + Title */}
-          <div className="flex items-center gap-4 mb-6">
+          <div className="flex flex-col items-center mb-8 text-center">
             <img
               src={HERO_IMAGE_BACKEND}
-              alt="logo"
-              className="w-16 h-16 rounded-lg shadow-lg border border-cyan-400 animate-float"
+              alt="Logo"
+              className="w-20 h-20 rounded-xl shadow-md border border-blue-300"
             />
-            <div>
-              <h1 className="text-3xl font-bold text-cyan-300 drop-shadow-lg tracking-wider cyber-title">
-                STUDENT OPTIMIZER
-              </h1>
-              <p className="text-fuchsia-400 text-xs opacity-80 tracking-wide">
-                Adaptive learning intelligence
-              </p>
-            </div>
+            <h1 className="text-3xl font-bold text-white mt-4 tracking-wide">
+              Student Optimizer
+            </h1>
+            <p className="text-blue-300 text-sm mt-1 opacity-80">
+              Smart Task & Routine Manager
+            </p>
           </div>
 
           {/* Form */}
           <form onSubmit={onSubmit} className="space-y-5">
 
             {/* Email */}
-            <input
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-              className="w-full p-3 text-cyan-200 bg-black/40 border border-cyan-600 rounded-lg
-              focus:ring-2 focus:ring-fuchsia-500 outline-none cyber-input"
-            />
+            <div>
+              <input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email"
+                className="w-full p-3 rounded-lg bg-white/20 text-white placeholder-gray-300 border border-white/30 
+                focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
 
             {/* Password */}
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              className="w-full p-3 text-cyan-200 bg-black/40 border border-cyan-600 rounded-lg
-              focus:ring-2 focus:ring-fuchsia-500 outline-none cyber-input"
-            />
+            <div>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                className="w-full p-3 rounded-lg bg-white/20 text-white placeholder-gray-300 border border-white/30 
+                focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
 
+            {/* Error */}
             {err && (
-              <div className="text-sm text-red-400 bg-red-500/10 p-2 rounded-lg animate-shake">
+              <div className="text-red-300 bg-red-500/20 border border-red-400/30 p-2 rounded-lg text-sm">
                 {err}
               </div>
             )}
@@ -110,99 +105,24 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-lg bg-gradient-to-r from-fuchsia-600 to-cyan-500
-              text-black font-bold hover:opacity-90 transition transform hover:scale-[1.02] neon-btn"
+              className="w-full py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold 
+              transition shadow-lg hover:shadow-blue-500/30 disabled:opacity-50"
             >
-              {loading ? 'Authenticating…' : 'Login'}
+              {loading ? 'Logging in…' : 'Login'}
             </button>
 
-            {/* Register */}
+            {/* Register Button */}
             <button
               type="button"
               onClick={() => router.push('/register')}
-              className="w-full py-3 rounded-lg border border-cyan-400 text-cyan-300 hover:bg-cyan-400/10 transition"
+              className="w-full py-3 rounded-lg border border-blue-300 text-blue-300 
+              hover:bg-blue-300/20 transition font-medium"
             >
-              Register
+              Create Account
             </button>
 
           </form>
         </div>
-
-        {/* Animations + Cyberpunk Styles */}
-        <style jsx>{`
-          /* Floating Logo Animation */
-          @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
-            100% { transform: translateY(0px); }
-          }
-          .animate-float {
-            animation: float 4s ease-in-out infinite;
-          }
-
-          /* Fade In Up */
-          @keyframes fade-in-up {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0px); }
-          }
-          .animate-fade-in-up {
-            animation: fade-in-up 0.7s ease-out;
-          }
-
-          /* Background Pulsing */
-          @keyframes pulse-slow {
-            0%, 100% { opacity: 0.2; }
-            50% { opacity: 0.4; }
-          }
-          .animate-pulse-slow {
-            animation: pulse-slow 7s ease-in-out infinite;
-          }
-
-          @keyframes pulse-slower {
-            0%, 100% { opacity: 0.15; }
-            50% { opacity: 0.3; }
-          }
-          .animate-pulse-slower {
-            animation: pulse-slower 11s ease-in-out infinite;
-          }
-
-          /* Shake on Error */
-          @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-4px); }
-            75% { transform: translateX(4px); }
-          }
-          .animate-shake {
-            animation: shake 0.3s ease-in-out;
-          }
-
-          /* Cyberpunk Grid Background */
-          .cyber-grid {
-            background-image:
-              linear-gradient(#0ff2 1px, transparent 1px),
-              linear-gradient(90deg, #f0f2 1px, transparent 1px);
-            background-size: 50px 50px;
-          }
-
-          /* Neon Card Border */
-          .neon-border {
-            border: 2px solid #0ff5;
-            box-shadow: 0px 0px 20px #0ff4, inset 0 0 20px #0ff2;
-          }
-
-          /* Cyberpunk Inputs */
-          .cyber-input {
-            box-shadow: inset 0 0 8px #0ff3;
-          }
-
-          .neon-btn {
-            box-shadow: 0 0 12px #f0f, 0 0 30px #0ff;
-          }
-
-          .cyber-title {
-            text-shadow: 0 0 8px #0ff, 0 0 20px #00eaff, 0 0 40px #0ff;
-          }
-        `}</style>
       </div>
     </>
   );

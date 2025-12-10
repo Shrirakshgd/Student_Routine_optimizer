@@ -15,9 +15,7 @@ export default function RegisterPage() {
   async function safeFetchJSON(res) {
     const text = await res.text();
     try { return text ? JSON.parse(text) : {}; }
-    catch {
-      throw new Error(`Server non-JSON (status ${res.status}):\n${text}`);
-    }
+    catch { throw new Error(`Server non-JSON (status ${res.status}):\n${text}`); }
   }
 
   async function handleSubmit(e) {
@@ -26,8 +24,8 @@ export default function RegisterPage() {
     setSuccess('');
     setLoading(true);
 
-    if (!email.trim() || !password.trim()) {
-      setErr('Email and password required');
+    if (!email.trim() || !password.trim() || !name.trim()) {
+      setErr('All fields are required');
       setLoading(false);
       return;
     }
@@ -37,14 +35,11 @@ export default function RegisterPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ name, email, password })
+        body: JSON.stringify({ name, email, password }),
       });
 
       const body = await safeFetchJSON(res);
-
-      if (!res.ok) {
-        throw new Error(body.error || body.message);
-      }
+      if (!res.ok) throw new Error(body.error || body.message);
 
       setSuccess('Registration successful — redirecting...');
       setTimeout(() => router.replace('/login'), 1200);
@@ -59,154 +54,94 @@ export default function RegisterPage() {
     <>
       <Head><title>Register — Student Optimizer</title></Head>
 
-      {/* Cyberpunk Background */}
-      <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-black">
-        
-        {/* Grid */}
-        <div className="absolute inset-0 cyber-grid opacity-20"></div>
+      {/* Background */}
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-slate-900 to-black px-4">
 
-        {/* Neon Pulses */}
-        <div className="absolute w-[450px] h-[450px] bg-fuchsia-600/20 rounded-full blur-3xl animate-pulse-slow -top-24 -left-10"></div>
-        <div className="absolute w-[550px] h-[550px] bg-cyan-500/20 rounded-full blur-3xl animate-pulse-slower bottom-0 right-0"></div>
-
-        {/* Neon Card */}
-        <div className="relative z-10 max-w-md w-full neon-border p-8 rounded-2xl bg-black/60 backdrop-blur-xl shadow-xl animate-fade-in-up">
+        {/* Card */}
+        <div className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl rounded-2xl p-8">
 
           {/* Header */}
-          <div className="flex items-center gap-4 mb-6">
+          <div className="flex flex-col items-center mb-8 text-center">
             <img
               src={HERO_IMAGE_BACKEND}
-              alt="logo"
-              className="w-16 h-16 rounded-lg border border-cyan-400 shadow-lg animate-float"
+              alt="Logo"
+              className="w-20 h-20 rounded-xl shadow-md border border-blue-300"
             />
-            <div>
-              <h1 className="text-3xl font-bold text-cyan-300 drop-shadow-lg tracking-wider cyber-title">
-                REGISTER
-              </h1>
-              <div className="text-xs text-fuchsia-400 opacity-80 tracking-wide">
-                Create your account
-              </div>
-            </div>
+            <h1 className="text-3xl font-bold text-white mt-4 tracking-wide">
+              Create Account
+            </h1>
+            <p className="text-blue-300 text-sm mt-1 opacity-80">
+              Join the Student Optimizer Platform
+            </p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
 
+            {/* Name */}
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Name"
-              className="w-full p-3 text-cyan-200 bg-black/40 border border-cyan-600 rounded-lg
-              focus:ring-2 focus:ring-fuchsia-500 outline-none cyber-input"
+              placeholder="Full Name"
+              className="w-full p-3 rounded-lg bg-white/20 text-white placeholder-gray-300 border border-white/30 
+              focus:ring-2 focus:ring-blue-500 outline-none"
             />
 
+            {/* Email */}
             <input
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-              className="w-full p-3 text-cyan-200 bg-black/40 border border-cyan-600 rounded-lg
-              focus:ring-2 focus:ring-fuchsia-500 outline-none cyber-input"
+              placeholder="Email Address"
+              className="w-full p-3 rounded-lg bg-white/20 text-white placeholder-gray-300 border border-white/30 
+              focus:ring-2 focus:ring-blue-500 outline-none"
             />
 
+            {/* Password */}
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
-              className="w-full p-3 text-cyan-200 bg-black/40 border border-cyan-600 rounded-lg
-              focus:ring-2 focus:ring-fuchsia-500 outline-none cyber-input"
+              className="w-full p-3 rounded-lg bg-white/20 text-white placeholder-gray-300 border border-white/30 
+              focus:ring-2 focus:ring-blue-500 outline-none"
             />
 
+            {/* Error */}
             {err && (
-              <div className="text-sm text-red-400 bg-red-500/10 p-2 rounded-lg animate-shake">
+              <div className="text-red-300 bg-red-500/20 border border-red-400/30 p-2 rounded-lg text-sm">
                 {err}
               </div>
             )}
 
+            {/* Success */}
             {success && (
-              <div className="text-sm text-green-400 bg-green-500/10 p-2 rounded-lg animate-fade-in-up">
+              <div className="text-green-300 bg-green-500/20 border border-green-400/30 p-2 rounded-lg text-sm">
                 {success}
               </div>
             )}
 
-            {/* Buttons */}
+            {/* Register Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-lg bg-gradient-to-r from-fuchsia-600 to-cyan-500
-              text-black font-bold hover:opacity-90 transition transform hover:scale-[1.02] neon-btn"
+              className="w-full py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold
+              transition shadow-lg hover:shadow-blue-500/30 disabled:opacity-50"
             >
               {loading ? 'Registering…' : 'Register'}
             </button>
 
+            {/* Login Redirect */}
             <button
               type="button"
               onClick={() => router.push('/login')}
-              className="w-full py-3 rounded-lg border border-cyan-400 text-cyan-300 hover:bg-cyan-400/10 transition"
+              className="w-full py-3 rounded-lg border border-blue-300 text-blue-300 
+              hover:bg-blue-300/20 transition font-medium"
             >
-              Login
+              Already have an account? Login
             </button>
+
           </form>
         </div>
-
-        {/* Animations & Styling */}
-        <style jsx>{`
-          @keyframes float {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-            100% { transform: translateY(0); }
-          }
-          .animate-float { animation: float 4s ease-in-out infinite; }
-
-          @keyframes fade-in-up {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-          }
-          .animate-fade-in-up { animation: fade-in-up 0.7s ease-out; }
-
-          @keyframes pulse-slow {
-            0%, 100% { opacity: 0.2; }
-            50% { opacity: 0.4; }
-          }
-          .animate-pulse-slow { animation: pulse-slow 7s infinite; }
-
-          @keyframes pulse-slower {
-            0%, 100% { opacity: 0.15; }
-            50% { opacity: 0.3; }
-          }
-          .animate-pulse-slower { animation: pulse-slower 11s infinite; }
-
-          @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-4px); }
-            75% { transform: translateX(4px); }
-          }
-          .animate-shake { animation: shake 0.3s ease-in-out; }
-
-          .cyber-grid {
-            background-image:
-              linear-gradient(#0ff2 1px, transparent 1px),
-              linear-gradient(90deg, #f0f2 1px, transparent 1px);
-            background-size: 50px 50px;
-          }
-
-          .neon-border {
-            border: 2px solid #0ff5;
-            box-shadow: 0 0 20px #0ff4, inset 0 0 20px #0ff2;
-          }
-
-          .cyber-input {
-            box-shadow: inset 0 0 8px #0ff3;
-          }
-
-          .neon-btn {
-            box-shadow: 0 0 12px #f0f, 0 0 30px #0ff;
-          }
-
-          .cyber-title {
-            text-shadow: 0 0 8px #0ff, 0 0 20px #00eaff, 0 0 40px #0ff;
-          }
-        `}</style>
       </div>
     </>
   );
