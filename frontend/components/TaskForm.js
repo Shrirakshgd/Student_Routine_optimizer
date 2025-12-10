@@ -12,30 +12,27 @@ export default function TaskForm({ userId = 1, onCreated = () => {} }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Try to read settings from provider (wrapped in try so no crash)
   let settings = null;
   try {
-    const ctx = useSettings();
-    settings = ctx.settings;
-  } catch (err) {
-    // provider missing → fallback
+    settings = useSettings().settings;
+  } catch {
     settings = null;
   }
 
-  // Apply defaultDuration from SettingsModal
+  // Load default duration
   useEffect(() => {
-    if (settings && settings.defaultDuration) {
+    if (settings?.defaultDuration) {
       setDurationMinutes(settings.defaultDuration);
-    } else {
-      // fallback to localStorage (old logic)
-      try {
-        const raw = localStorage.getItem("app_settings");
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (parsed.defaultDuration) setDurationMinutes(parsed.defaultDuration);
-        }
-      } catch {}
+      return;
     }
+
+    try {
+      const raw = localStorage.getItem("app_settings");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed.defaultDuration) setDurationMinutes(parsed.defaultDuration);
+      }
+    } catch {}
   }, [settings]);
 
   function resetForm() {
@@ -46,18 +43,12 @@ export default function TaskForm({ userId = 1, onCreated = () => {} }) {
     setCategory("");
   }
 
-  // Safe JSON parser
   async function safeParse(res) {
     const text = await res.text();
     try {
       return text ? JSON.parse(text) : {};
-    } catch (err) {
-      throw new Error(
-        `Server returned non-JSON data (status ${res.status}):\n\n${text.slice(
-          0,
-          2000
-        )}`
-      );
+    } catch {
+      throw new Error(`Invalid JSON response:\n${text}`);
     }
   }
 
@@ -90,96 +81,105 @@ export default function TaskForm({ userId = 1, onCreated = () => {} }) {
       });
 
       const json = await safeParse(res);
-
-      if (!res.ok) {
-        throw new Error(json.error || json.message || `Status ${res.status}`);
-      }
+      if (!res.ok) throw new Error(json.error || json.message);
 
       resetForm();
       onCreated(json);
     } catch (err) {
-      console.error("TaskForm create error:", err);
-      setError(err.message || "Error creating task");
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   }
 
-  return (
-    <div className="bg-white dark:bg-gray-800 p-4 rounded shadow text-gray-900 dark:text-gray-100">
-      <h4 className="font-semibold mb-3">Create Task</h4>
+  // -------------------------
+  // UI DESIGN — BLUE THEME
+  // -------------------------
 
-      <form onSubmit={handleSubmit} className="space-y-3">
-        {/* Title */}
+  return (
+    <div className="bg-white/10 dark:bg-gray-900/40 backdrop-blur-sm border border-white/20 rounded-xl p-6 shadow-lg">
+      
+      {/* Title */}
+      <h4 className="text-xl font-semibold text-white mb-4 tracking-wide">
+        Create New Task
+      </h4>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+
+        {/* Task Title */}
         <div>
-          <label className="block text-sm">Title</label>
+          <label className="text-blue-200 text-sm">Task Title</label>
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="What do you need to do?"
-            className="mt-1 w-full border p-2 rounded dark:bg-gray-700"
+            className="mt-1 w-full p-2 bg-white/10 text-white placeholder-gray-300 border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
           />
         </div>
 
-        {/* Duration + Priority */}
-        <div className="grid grid-cols-2 gap-3">
+        {/* Duration & Priority */}
+        <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm">Duration (min)</label>
+            <label className="text-blue-200 text-sm">Duration (minutes)</label>
             <input
               type="number"
               min={5}
               value={durationMinutes}
               onChange={(e) => setDurationMinutes(e.target.value)}
-              className="mt-1 w-full border p-2 rounded dark:bg-gray-700"
+              className="mt-1 w-full p-2 bg-white/10 text-white border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-sm">Priority</label>
+            <label className="text-blue-200 text-sm">Priority</label>
             <select
               value={priority}
               onChange={(e) => setPriority(e.target.value)}
-              className="mt-1 w-full border p-2 rounded dark:bg-gray-700"
+              className="mt-1 w-full p-2 bg-white/10 text-white border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
             >
-              <option value="">—</option>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
-              <option value="low">Low</option>
+              <option value="" className="text-black">None</option>
+              <option value="high" className="text-black">High</option>
+              <option value="medium" className="text-black">Medium</option>
+              <option value="low" className="text-black">Low</option>
             </select>
           </div>
         </div>
 
         {/* Deadline */}
         <div>
-          <label className="block text-sm">Deadline (optional)</label>
+          <label className="text-blue-200 text-sm">Deadline (optional)</label>
           <input
             type="datetime-local"
             value={deadline}
             onChange={(e) => setDeadline(e.target.value)}
-            className="mt-1 w-full border p-2 rounded dark:bg-gray-700"
+            className="mt-1 w-full p-2 bg-white/10 text-white border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
           />
         </div>
 
         {/* Category */}
         <div>
-          <label className="block text-sm">Category</label>
+          <label className="text-blue-200 text-sm">Category</label>
           <input
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             placeholder="e.g., Study, Exercise"
-            className="mt-1 w-full border p-2 rounded dark:bg-gray-700"
+            className="mt-1 w-full p-2 bg-white/10 text-white placeholder-gray-300 border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
           />
         </div>
 
+        {/* Error Message */}
         {error && (
-          <div className="text-sm text-red-500 whitespace-pre-wrap">{error}</div>
+          <div className="text-red-300 bg-red-500/20 border border-red-400/20 p-2 rounded-lg text-sm">
+            {error}
+          </div>
         )}
 
-        <div className="flex gap-2">
+        {/* Action Buttons */}
+        <div className="flex gap-3">
           <button
             type="submit"
             disabled={loading}
-            className="px-4 py-2 bg-indigo-600 text-white rounded"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg shadow hover:shadow-blue-500/30 text-white font-medium disabled:opacity-50"
           >
             {loading ? "Saving..." : "Save Task"}
           </button>
@@ -187,7 +187,7 @@ export default function TaskForm({ userId = 1, onCreated = () => {} }) {
           <button
             type="button"
             onClick={resetForm}
-            className="px-3 py-2 border rounded"
+            className="px-4 py-2 border border-white/20 text-white rounded-lg hover:bg-white/10"
           >
             Reset
           </button>

@@ -1,11 +1,11 @@
 // components/SettingsModal.jsx
-import React, { useEffect, useState, createContext, useContext } from 'react';
-import { SETTINGS_IMAGE } from '../components/api';
+import React, { useEffect, useState, createContext, useContext } from "react";
+import { SETTINGS_IMAGE } from "../components/api";
 
-const STORAGE_KEY = 'app_settings';
+const STORAGE_KEY = "app_settings";
 
 const defaultSettings = {
-  theme: 'light', // 'light' | 'dark' | 'system'
+  theme: "light",
   defaultDuration: 60,
   notifications: {
     enabled: false,
@@ -25,77 +25,77 @@ const defaultSettings = {
   },
   autoschedule: {
     enabled: false,
-    strategy: 'deadline',
+    strategy: "deadline",
   },
   reminders: {
     dailySummary: false,
   },
-  language: 'en',
-  // example extra flag used by TaskList
+  language: "en",
   hideCompletedTasks: false,
 };
 
 const SettingsContext = createContext();
-
 export function SettingsProvider({ children }) {
   const [settings, setSettings] = useState(defaultSettings);
   const [loaded, setLoaded] = useState(false);
 
+  // Load settings
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        setSettings((s) => ({ ...s, ...parsed }));
-      }
-    } catch (e) {
-      console.warn('Failed to read app settings', e);
-    } finally {
-      setLoaded(true);
-    }
+      if (raw) setSettings((s) => ({ ...s, ...JSON.parse(raw) }));
+    } catch {}
+    setLoaded(true);
   }, []);
 
+  // Save settings
   useEffect(() => {
     if (!loaded) return;
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-    } catch (e) {
-      console.warn('Failed to save settings', e);
-    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
   }, [settings, loaded]);
 
+  // Apply theme
   useEffect(() => {
-    const apply = () => {
-      const theme = settings.theme;
-      const root = document.documentElement;
-      if (theme === 'system') {
-        const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        root.classList.toggle('dark', isDark);
-      } else if (theme === 'dark') {
-        root.classList.add('dark');
-      } else {
-        root.classList.remove('dark');
-      }
-    };
-    apply();
+    const root = document.documentElement;
+    const theme = settings.theme;
+
+    if (theme === "system") {
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      root.classList.toggle("dark", prefersDark);
+    } else {
+      root.classList.toggle("dark", theme === "dark");
+    }
   }, [settings.theme]);
 
-  const value = { settings, setSettings };
-  return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;
+  return (
+    <SettingsContext.Provider value={{ settings, setSettings }}>
+      {children}
+    </SettingsContext.Provider>
+  );
 }
 
 export function useSettings() {
   const ctx = useContext(SettingsContext);
-  if (!ctx) throw new Error('useSettings must be used inside SettingsProvider');
+  if (!ctx) throw new Error("useSettings must be inside SettingsProvider");
   return ctx;
 }
 
-function Row({ children, className = '' }) {
-  return <div className={`mb-3 ${className}`}>{children}</div>;
+function Section({ title, children }) {
+  return (
+    <div className="bg-white/10 dark:bg-gray-900/40 backdrop-blur-sm p-4 rounded-lg border border-white/10">
+      <h4 className="font-semibold mb-3 text-white">{title}</h4>
+      {children}
+    </div>
+  );
 }
 
-function Label({ children }) {
-  return <div className="text-sm text-gray-600 dark:text-gray-300 mb-1">{children}</div>;
+function Row({ label, children }) {
+  return (
+    <div className="mb-4">
+      {label && <div className="text-sm text-blue-200 mb-1">{label}</div>}
+      {children}
+    </div>
+  );
 }
 
 export default function SettingsModal({ open, onClose }) {
@@ -104,222 +104,334 @@ export default function SettingsModal({ open, onClose }) {
 
   useEffect(() => setLocal(settings), [open, settings]);
 
-  function update(path, value) {
-    setLocal((s) => {
-      const copy = JSON.parse(JSON.stringify(s));
-      const parts = path.split('.');
-      let cur = copy;
-      for (let i = 0; i < parts.length - 1; i++) {
-        const p = parts[i];
-        cur[p] = cur[p] || {};
-        cur = cur[p];
-      }
-      cur[parts[parts.length - 1]] = value;
+  const update = (path, value) => {
+    setLocal((draft) => {
+      const copy = structuredClone(draft);
+      const keys = path.split(".");
+      let ref = copy;
+      for (let i = 0; i < keys.length - 1; i++) ref = ref[keys[i]];
+      ref[keys.at(-1)] = value;
       return copy;
     });
-  }
+  };
 
-  function save() {
+  const save = () => {
     setSettings(local);
-    onClose && onClose();
-  }
+    onClose();
+  };
 
-  function reset() {
-    setLocal(defaultSettings);
-  }
+  const reset = () => setLocal(defaultSettings);
 
   if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative w-full max-w-3xl bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mx-4">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <img src={SETTINGS_IMAGE} alt="logo" className="w-12 h-12 rounded" />
+      {/* Overlay */}
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Modal */}
+      <div className="relative w-full max-w-4xl bg-gradient-to-br from-blue-950 via-slate-900 to-black text-white rounded-xl shadow-2xl p-6 mx-4 border border-white/10">
+        
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <img src={SETTINGS_IMAGE} className="w-12 h-12 rounded-lg border border-blue-300 shadow" />
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Settings</h3>
-              <div className="text-xs text-gray-500 dark:text-gray-400">Customize your Student Optimizer experience</div>
+              <h2 className="text-xl font-bold tracking-wide">Settings</h2>
+              <p className="text-sm text-blue-300 opacity-80">
+                Customize Student Optimizer
+              </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <button onClick={reset} className="px-3 py-1 border rounded text-sm">Reset</button>
-            <button onClick={onClose} className="px-3 py-1 border rounded text-sm">Close</button>
-            <button onClick={save} className="px-4 py-2 bg-indigo-600 text-white rounded">Save</button>
+
+          <div className="flex gap-2">
+            <button onClick={reset} className="px-3 py-1 rounded-lg border border-blue-300 text-blue-300">
+              Reset
+            </button>
+            <button onClick={onClose} className="px-3 py-1 rounded-lg border border-gray-400 text-gray-200">
+              Close
+            </button>
+            <button
+              onClick={save}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg shadow"
+            >
+              Save
+            </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[70vh] overflow-auto pr-2">
-          {/* Theme */}
-          <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded">
-            <h4 className="font-semibold mb-2">Theme</h4>
-            <Row>
-              <Label>Theme mode</Label>
-              <select value={local.theme} onChange={(e) => update('theme', e.target.value)} className="w-full p-2 border rounded dark:bg-gray-700">
-                <option value="system">System (follow OS)</option>
+        {/* Content Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto pr-2">
+
+          {/* THEME */}
+          <Section title="Theme">
+            <Row label="Theme mode">
+              <select
+                value={local.theme}
+                onChange={(e) => update("theme", e.target.value)}
+                className="w-full p-2 rounded bg-white/10 border border-white/20"
+              >
+                <option value="system">System</option>
                 <option value="light">Light</option>
                 <option value="dark">Dark</option>
               </select>
             </Row>
-          </div>
+          </Section>
 
-          {/* Default duration & autoschedule */}
-          <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded">
-            <h4 className="font-semibold mb-2">Default Task</h4>
-            <Row>
-              <Label>Default task duration (minutes)</Label>
-              <input type="number" min={1} value={local.defaultDuration} onChange={(e) => update('defaultDuration', Number(e.target.value))} className="w-full p-2 border rounded dark:bg-gray-700" />
+          {/* DEFAULT DURATION */}
+          <Section title="Default Task">
+            <Row label="Default duration (minutes)">
+              <input
+                type="number"
+                min="1"
+                value={local.defaultDuration}
+                onChange={(e) => update("defaultDuration", Number(e.target.value))}
+                className="w-full p-2 rounded bg-white/10 border border-white/20"
+              />
             </Row>
-            <Row>
-              <Label>Auto-schedule on creation</Label>
-              <div className="flex items-center gap-2">
-                <input id="autoschedule" type="checkbox" checked={local.autoschedule.enabled} onChange={(e) => update('autoschedule.enabled', e.target.checked)} />
-                <label htmlFor="autoschedule">Enable auto scheduling</label>
-              </div>
-              <div className="mt-2">
-                <Label>Autoschedule strategy</Label>
-                <select value={local.autoschedule.strategy} onChange={(e) => update('autoschedule.strategy', e.target.value)} className="w-full p-2 border rounded dark:bg-gray-700">
-                  <option value="deadline">By nearest deadline</option>
-                  <option value="priority">By priority</option>
-                </select>
-              </div>
-            </Row>
-          </div>
 
-          {/* Notifications */}
-          <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded">
-            <h4 className="font-semibold mb-2">Notifications</h4>
-            <Row>
-              <Label>Enable notifications</Label>
+            <Row label="Auto-schedule on creation">
               <div className="flex items-center gap-2">
-                <input type="checkbox" checked={local.notifications.enabled} onChange={(e) => update('notifications.enabled', e.target.checked)} />
-                <span>Enabled</span>
+                <input
+                  type="checkbox"
+                  checked={local.autoschedule.enabled}
+                  onChange={(e) => update("autoschedule.enabled", e.target.checked)}
+                />
+                Enable auto scheduling
               </div>
             </Row>
-            <Row>
-              <Label>Desktop notifications</Label>
-              <div className="flex items-center gap-2">
-                <input type="checkbox" checked={local.notifications.desktop} onChange={(e) => update('notifications.desktop', e.target.checked)} />
-                <span>Allow desktop</span>
-              </div>
-            </Row>
-            <Row>
-              <Label>Reminder minutes before deadline</Label>
-              <input type="number" min={0} value={local.notifications.reminderMinutesBefore} onChange={(e) => update('notifications.reminderMinutesBefore', Number(e.target.value))} className="w-full p-2 border rounded dark:bg-gray-700" />
-            </Row>
-          </div>
 
-          {/* Focus Mode */}
-          <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded">
-            <h4 className="font-semibold mb-2">Focus Mode (Pomodoro)</h4>
-            <Row>
-              <div className="flex items-center gap-2">
-                <input type="checkbox" checked={local.focus.enabled} onChange={(e) => update('focus.enabled', e.target.checked)} />
-                <span>Enable Focus Mode</span>
-              </div>
-            </Row>
-            <Row>
-              <Label>Session (minutes)</Label>
-              <input type="number" min={5} value={local.focus.sessionMinutes} onChange={(e) => update('focus.sessionMinutes', Number(e.target.value))} className="w-full p-2 border rounded dark:bg-gray-700" />
-            </Row>
-            <Row>
-              <Label>Break (minutes)</Label>
-              <input type="number" min={1} value={local.focus.breakMinutes} onChange={(e) => update('focus.breakMinutes', Number(e.target.value))} className="w-full p-2 border rounded dark:bg-gray-700" />
-            </Row>
-            <Row>
-              <div className="flex items-center gap-2">
-                <input type="checkbox" checked={local.focus.autoStartNext} onChange={(e) => update('focus.autoStartNext', e.target.checked)} />
-                <span>Auto-start next session</span>
-              </div>
-            </Row>
-          </div>
-
-          {/* Preferred Study */}
-          <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded">
-            <h4 className="font-semibold mb-2">Preferred Study Times</h4>
-            <Row>
-              <Label>Start Hour (0-23)</Label>
-              <input type="number" min={0} max={23} value={local.preferredStudy.startHour} onChange={(e) => update('preferredStudy.startHour', Number(e.target.value))} className="w-full p-2 border rounded dark:bg-gray-700" />
-            </Row>
-            <Row>
-              <Label>End Hour (0-23)</Label>
-              <input type="number" min={0} max={23} value={local.preferredStudy.endHour} onChange={(e) => update('preferredStudy.endHour', Number(e.target.value))} className="w-full p-2 border rounded dark:bg-gray-700" />
-            </Row>
-          </div>
-
-          {/* Reminders & Language */}
-          <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded">
-            <h4 className="font-semibold mb-2">Reminders & Language</h4>
-            <Row>
-              <div className="flex items-center gap-2">
-                <input type="checkbox" checked={local.reminders.dailySummary} onChange={(e) => update('reminders.dailySummary', e.target.checked)} />
-                <span>Daily summary email (if enabled)</span>
-              </div>
-            </Row>
-            <Row>
-              <Label>Language</Label>
-              <select value={local.language} onChange={(e) => update('language', e.target.value)} className="w-full p-2 border rounded dark:bg-gray-700">
-                <option value="en">English</option>
-                <option value="hi">हिन्दी (Hindi)</option>
-                <option value="mr">मराठी (Marathi)</option>
-                <option value="kn">ಕನ್ನಡ (Kannada)</option>
-                <option value="ta">தமிழ் (Tamil)</option>
+            <Row label="Strategy">
+              <select
+                value={local.autoschedule.strategy}
+                onChange={(e) => update("autoschedule.strategy", e.target.value)}
+                className="w-full p-2 rounded bg-white/10 border border-white/20"
+              >
+                <option value="deadline">Nearest deadline</option>
+                <option value="priority">By priority</option>
               </select>
             </Row>
-          </div>
+          </Section>
 
-          {/* Data & Account */}
-          <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded">
-            <h4 className="font-semibold mb-2">Data & Account</h4>
+          {/* NOTIFICATIONS */}
+          <Section title="Notifications">
             <Row>
-              <button onClick={() => {
-                const payload = { settings: local };
-                const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'student_optimizer_settings.json';
-                a.click();
-                URL.revokeObjectURL(url);
-              }} className="px-3 py-2 bg-white border rounded">Export settings</button>
-            </Row>
-
-            <Row>
-              <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">Import settings (JSON)</label>
-              <input type="file" accept="application/json" onChange={(e) => {
-                const f = e.target.files && e.target.files[0];
-                if (!f) return;
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                  try {
-                    const parsed = JSON.parse(ev.target.result);
-                    if (parsed && parsed.settings) {
-                      setLocal(parsed.settings);
-                      alert('Imported settings. Press Save to apply.');
-                    } else {
-                      alert('File does not contain settings');
-                    }
-                  } catch (err) {
-                    alert('Invalid JSON');
-                  }
-                };
-                reader.readAsText(f);
-              }} className="w-full" />
-            </Row>
-
-            <Row>
-              <Label>Account actions</Label>
-              <div className="flex gap-2">
-                <button onClick={() => { window.location.href = '/logout'; }} className="px-3 py-2 border rounded text-sm">Logout</button>
-                <button onClick={() => {
-                  if (!confirm('This will clear all settings from this browser. Continue?')) return;
-                  localStorage.removeItem(STORAGE_KEY);
-                  setLocal(defaultSettings);
-                  setSettings(defaultSettings);
-                }} className="px-3 py-2 border rounded text-sm text-red-600">Clear local settings</button>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={local.notifications.enabled}
+                  onChange={(e) => update("notifications.enabled", e.target.checked)}
+                />
+                Enable notifications
               </div>
             </Row>
-          </div>
+
+            <Row>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={local.notifications.desktop}
+                  onChange={(e) => update("notifications.desktop", e.target.checked)}
+                />
+                Desktop notifications
+              </div>
+            </Row>
+
+            <Row label="Reminder minutes before deadline">
+              <input
+                type="number"
+                value={local.notifications.reminderMinutesBefore}
+                onChange={(e) =>
+                  update(
+                    "notifications.reminderMinutesBefore",
+                    Number(e.target.value)
+                  )
+                }
+                className="w-full p-2 rounded bg-white/10 border border-white/20"
+              />
+            </Row>
+          </Section>
+
+          {/* FOCUS MODE */}
+          <Section title="Focus Mode (Pomodoro)">
+            <Row>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={local.focus.enabled}
+                  onChange={(e) => update("focus.enabled", e.target.checked)}
+                />
+                Enable Focus Mode
+              </div>
+            </Row>
+
+            <Row label="Session (minutes)">
+              <input
+                type="number"
+                min="5"
+                value={local.focus.sessionMinutes}
+                onChange={(e) =>
+                  update("focus.sessionMinutes", Number(e.target.value))
+                }
+                className="w-full p-2 rounded bg-white/10 border border-white/20"
+              />
+            </Row>
+
+            <Row label="Break (minutes)">
+              <input
+                type="number"
+                min="1"
+                value={local.focus.breakMinutes}
+                onChange={(e) =>
+                  update("focus.breakMinutes", Number(e.target.value))
+                }
+                className="w-full p-2 rounded bg-white/10 border border-white/20"
+              />
+            </Row>
+
+            <Row>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={local.focus.autoStartNext}
+                  onChange={(e) => update("focus.autoStartNext", e.target.checked)}
+                />
+                Auto-start next session
+              </div>
+            </Row>
+          </Section>
+
+          {/* STUDY TIMES */}
+          <Section title="Preferred Study Times">
+            <Row label="Start Hour (0–23)">
+              <input
+                type="number"
+                min="0"
+                max="23"
+                value={local.preferredStudy.startHour}
+                onChange={(e) =>
+                  update("preferredStudy.startHour", Number(e.target.value))
+                }
+                className="w-full p-2 rounded bg-white/10 border border-white/20"
+              />
+            </Row>
+
+            <Row label="End Hour (0–23)">
+              <input
+                type="number"
+                min="0"
+                max="23"
+                value={local.preferredStudy.endHour}
+                onChange={(e) =>
+                  update("preferredStudy.endHour", Number(e.target.value))
+                }
+                className="w-full p-2 rounded bg-white/10 border border-white/20"
+              />
+            </Row>
+          </Section>
+
+          {/* REMINDERS & LANGUAGE */}
+          <Section title="Reminders & Language">
+            <Row>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={local.reminders.dailySummary}
+                  onChange={(e) =>
+                    update("reminders.dailySummary", e.target.checked)
+                  }
+                />
+                Daily summary email
+              </div>
+            </Row>
+
+            <Row label="Language">
+              <select
+                value={local.language}
+                onChange={(e) => update("language", e.target.value)}
+                className="w-full p-2 rounded bg-white/10 border border-white/20"
+              >
+                <option value="en">English</option>
+                <option value="hi">Hindi</option>
+                <option value="mr">Marathi</option>
+                <option value="kn">Kannada</option>
+                <option value="ta">Tamil</option>
+              </select>
+            </Row>
+          </Section>
+
+          {/* DATA EXPORT / DANGER ZONE */}
+          <Section title="Data & Account">
+            <Row>
+              <button
+                onClick={() => {
+                  const blob = new Blob(
+                    [JSON.stringify({ settings: local }, null, 2)],
+                    { type: "application/json" }
+                  );
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = "student_optimizer_settings.json";
+                  a.click();
+                }}
+                className="px-3 py-2 bg-white/10 rounded border border-white/20 hover:bg-white/20"
+              >
+                Export settings
+              </button>
+            </Row>
+
+            <Row label="Import settings (JSON)">
+              <input
+                type="file"
+                accept="application/json"
+                className="w-full bg-white/10 border border-white/20 p-2 rounded"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const reader = new FileReader();
+                  reader.onload = (ev) => {
+                    try {
+                      const parsed = JSON.parse(ev.target.result);
+                      if (parsed.settings) {
+                        setLocal(parsed.settings);
+                        alert("Settings imported. Press Save to apply.");
+                      } else alert("Invalid settings JSON");
+                    } catch {
+                      alert("Invalid JSON file");
+                    }
+                  };
+                  reader.readAsText(file);
+                }}
+              />
+            </Row>
+
+            <Row label="Account actions">
+              <div className="flex gap-2">
+                <button
+                  onClick={() => (window.location.href = "/logout")}
+                  className="px-3 py-2 border border-white/20 rounded hover:bg-white/10"
+                >
+                  Logout
+                </button>
+
+                <button
+                  onClick={() => {
+                    if (!confirm("Clear all settings in this browser?")) return;
+                    localStorage.removeItem(STORAGE_KEY);
+                    setSettings(defaultSettings);
+                    setLocal(defaultSettings);
+                  }}
+                  className="px-3 py-2 border border-red-400 text-red-400 rounded hover:bg-red-400/10"
+                >
+                  Clear local settings
+                </button>
+              </div>
+            </Row>
+          </Section>
         </div>
       </div>
     </div>
