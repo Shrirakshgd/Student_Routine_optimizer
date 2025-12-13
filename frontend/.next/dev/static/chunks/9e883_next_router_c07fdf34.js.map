@@ -2,5 +2,5 @@
   "version": 3,
   "sources": [],
   "sections": [
-    {"offset": {"line": 3, "column": 0}, "map": {"version":3,"sources":["file:///R:/SHRIRAKSH/SAGARFINAL/StudentRoutineOptimizer/frontend/node_modules/next/router.js"],"sourcesContent":["module.exports = require('./dist/client/router')\n"],"names":[],"mappings":"AAAA,OAAO,OAAO","ignoreList":[0]}}]
+    {"offset": {"line": 3, "column": 0}, "map": {"version":3,"sources":["file:///R:/SHRIRAKSH/Student_Routine_optimizer/Student_Routine_optimizer/frontend/node_modules/next/router.js"],"sourcesContent":["module.exports = require('./dist/client/router')\n"],"names":[],"mappings":"AAAA,OAAO,OAAO","ignoreList":[0]}}]
 }

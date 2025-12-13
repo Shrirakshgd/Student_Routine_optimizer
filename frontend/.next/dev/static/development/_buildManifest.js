@@ -2,12 +2,6 @@ self.__BUILD_MANIFEST = {
   "/": [
     "static/chunks/pages/index.js"
   ],
-  "/login": [
-    "static/chunks/pages/login.js"
-  ],
-  "/register": [
-    "static/chunks/pages/register.js"
-  ],
   "__rewrites": {
     "afterFiles": [],
     "beforeFiles": [],
@@ -19,6 +13,8 @@ self.__BUILD_MANIFEST = {
     "/_error",
     "/login",
     "/logout",
-    "/register"
+    "/onboarding",
+    "/register",
+    "/verify-email"
   ]
 };self.__BUILD_MANIFEST_CB && self.__BUILD_MANIFEST_CB()

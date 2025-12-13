@@ -499,9 +499,9 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$ap
 var _s = __turbopack_context__.k.signature(), _s1 = __turbopack_context__.k.signature(), _s2 = __turbopack_context__.k.signature();
 ;
 ;
-const STORAGE_KEY = 'app_settings';
+const STORAGE_KEY = "app_settings";
 const defaultSettings = {
-    theme: 'light',
+    theme: "light",
     defaultDuration: 60,
     notifications: {
         enabled: false,
@@ -521,13 +521,12 @@ const defaultSettings = {
     },
     autoschedule: {
         enabled: false,
-        strategy: 'deadline'
+        strategy: "deadline"
     },
     reminders: {
         dailySummary: false
     },
-    language: 'en',
-    // example extra flag used by TaskList
+    language: "en",
     hideCompletedTasks: false
 };
 const SettingsContext = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["createContext"])();
@@ -535,71 +534,56 @@ function SettingsProvider({ children }) {
     _s();
     const [settings, setSettings] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(defaultSettings);
     const [loaded, setLoaded] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    // Load settings
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "SettingsProvider.useEffect": ()=>{
             try {
                 const raw = localStorage.getItem(STORAGE_KEY);
-                if (raw) {
-                    const parsed = JSON.parse(raw);
-                    setSettings({
-                        "SettingsProvider.useEffect": (s)=>({
-                                ...s,
-                                ...parsed
-                            })
-                    }["SettingsProvider.useEffect"]);
-                }
-            } catch (e) {
-                console.warn('Failed to read app settings', e);
-            } finally{
-                setLoaded(true);
-            }
+                if (raw) setSettings({
+                    "SettingsProvider.useEffect": (s)=>({
+                            ...s,
+                            ...JSON.parse(raw)
+                        })
+                }["SettingsProvider.useEffect"]);
+            } catch  {}
+            setLoaded(true);
         }
     }["SettingsProvider.useEffect"], []);
+    // Save settings
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "SettingsProvider.useEffect": ()=>{
             if (!loaded) return;
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-            } catch (e) {
-                console.warn('Failed to save settings', e);
-            }
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
         }
     }["SettingsProvider.useEffect"], [
         settings,
         loaded
     ]);
+    // Apply theme
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "SettingsProvider.useEffect": ()=>{
-            const apply = {
-                "SettingsProvider.useEffect.apply": ()=>{
-                    const theme = settings.theme;
-                    const root = document.documentElement;
-                    if (theme === 'system') {
-                        const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-                        root.classList.toggle('dark', isDark);
-                    } else if (theme === 'dark') {
-                        root.classList.add('dark');
-                    } else {
-                        root.classList.remove('dark');
-                    }
-                }
-            }["SettingsProvider.useEffect.apply"];
-            apply();
+            const root = document.documentElement;
+            const theme = settings.theme;
+            if (theme === "system") {
+                const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+                root.classList.toggle("dark", prefersDark);
+            } else {
+                root.classList.toggle("dark", theme === "dark");
+            }
         }
     }["SettingsProvider.useEffect"], [
         settings.theme
     ]);
-    const value = {
-        settings,
-        setSettings
-    };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(SettingsContext.Provider, {
-        value: value,
+        value: {
+            settings,
+            setSettings
+        },
         children: children
     }, void 0, false, {
         fileName: "[project]/frontend/components/SettingsModal.js",
-        lineNumber: 84,
-        columnNumber: 10
+        lineNumber: 71,
+        columnNumber: 5
     }, this);
 }
 _s(SettingsProvider, "CVEfXuFbemewS/yMdfBku3T1CY0=");
@@ -607,32 +591,52 @@ _c = SettingsProvider;
 function useSettings() {
     _s1();
     const ctx = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useContext"])(SettingsContext);
-    if (!ctx) throw new Error('useSettings must be used inside SettingsProvider');
+    if (!ctx) throw new Error("useSettings must be inside SettingsProvider");
     return ctx;
 }
 _s1(useSettings, "/dMy7t63NXD4eYACoT93CePwGrg=");
-function Row({ children, className = '' }) {
+function Section({ title, children }) {
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: `mb-3 ${className}`,
-        children: children
-    }, void 0, false, {
+        className: "bg-white/10 dark:bg-gray-900/40 backdrop-blur-sm p-4 rounded-lg border border-white/10",
+        children: [
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
+                className: "font-semibold mb-3 text-white",
+                children: title
+            }, void 0, false, {
+                fileName: "[project]/frontend/components/SettingsModal.js",
+                lineNumber: 86,
+                columnNumber: 7
+            }, this),
+            children
+        ]
+    }, void 0, true, {
+        fileName: "[project]/frontend/components/SettingsModal.js",
+        lineNumber: 85,
+        columnNumber: 5
+    }, this);
+}
+_c1 = Section;
+function Row({ label, children }) {
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        className: "mb-4",
+        children: [
+            label && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "text-sm text-blue-200 mb-1",
+                children: label
+            }, void 0, false, {
+                fileName: "[project]/frontend/components/SettingsModal.js",
+                lineNumber: 95,
+                columnNumber: 17
+            }, this),
+            children
+        ]
+    }, void 0, true, {
         fileName: "[project]/frontend/components/SettingsModal.js",
         lineNumber: 94,
-        columnNumber: 10
+        columnNumber: 5
     }, this);
 }
-_c1 = Row;
-function Label({ children }) {
-    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "text-sm text-gray-600 dark:text-gray-300 mb-1",
-        children: children
-    }, void 0, false, {
-        fileName: "[project]/frontend/components/SettingsModal.js",
-        lineNumber: 98,
-        columnNumber: 10
-    }, this);
-}
-_c2 = Label;
+_c2 = Row;
 function SettingsModal({ open, onClose }) {
     _s2();
     const { settings, setSettings } = useSettings();
@@ -643,459 +647,287 @@ function SettingsModal({ open, onClose }) {
         open,
         settings
     ]);
-    function update(path, value) {
-        setLocal((s)=>{
-            const copy = JSON.parse(JSON.stringify(s));
-            const parts = path.split('.');
-            let cur = copy;
-            for(let i = 0; i < parts.length - 1; i++){
-                const p = parts[i];
-                cur[p] = cur[p] || {};
-                cur = cur[p];
-            }
-            cur[parts[parts.length - 1]] = value;
+    const update = (path, value)=>{
+        setLocal((draft)=>{
+            const copy = structuredClone(draft);
+            const keys = path.split(".");
+            let ref = copy;
+            for(let i = 0; i < keys.length - 1; i++)ref = ref[keys[i]];
+            ref[keys.at(-1)] = value;
             return copy;
         });
-    }
-    function save() {
+    };
+    const save = ()=>{
         setSettings(local);
-        onClose && onClose();
-    }
-    function reset() {
-        setLocal(defaultSettings);
-    }
+        onClose();
+    };
+    const reset = ()=>setLocal(defaultSettings);
     if (!open) return null;
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "fixed inset-0 z-50 flex items-center justify-center",
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "absolute inset-0 bg-black/40",
+                className: "absolute inset-0 bg-black/50 backdrop-blur-sm",
                 onClick: onClose
             }, void 0, false, {
                 fileName: "[project]/frontend/components/SettingsModal.js",
-                lineNumber: 135,
+                lineNumber: 130,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "relative w-full max-w-3xl bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mx-4",
+                className: "relative w-full max-w-4xl bg-gradient-to-br from-blue-950 via-slate-900 to-black text-white rounded-xl shadow-2xl p-6 mx-4 border border-white/10",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "flex items-center justify-between mb-4",
+                        className: "flex items-center justify-between mb-6",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "flex items-center gap-3",
+                                className: "flex items-center gap-4",
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
                                         src: __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$api$2e$js__$5b$client$5d$__$28$ecmascript$29$__["SETTINGS_IMAGE"],
-                                        alt: "logo",
-                                        className: "w-12 h-12 rounded"
+                                        className: "w-12 h-12 rounded-lg border border-blue-300 shadow"
                                     }, void 0, false, {
                                         fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 139,
+                                        lineNumber: 141,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                         children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                                className: "text-lg font-semibold text-gray-900 dark:text-gray-100",
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                                className: "text-xl font-bold tracking-wide",
                                                 children: "Settings"
                                             }, void 0, false, {
                                                 fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 141,
+                                                lineNumber: 143,
                                                 columnNumber: 15
                                             }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "text-xs text-gray-500 dark:text-gray-400",
-                                                children: "Customize your Student Optimizer experience"
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                className: "text-sm text-blue-300 opacity-80",
+                                                children: "Customize Student Optimizer"
                                             }, void 0, false, {
                                                 fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 142,
+                                                lineNumber: 144,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 140,
+                                        lineNumber: 142,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/frontend/components/SettingsModal.js",
-                                lineNumber: 138,
+                                lineNumber: 140,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "flex items-center gap-2",
+                                className: "flex gap-2",
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                         onClick: reset,
-                                        className: "px-3 py-1 border rounded text-sm",
+                                        className: "px-3 py-1 rounded-lg border border-blue-300 text-blue-300",
                                         children: "Reset"
                                     }, void 0, false, {
                                         fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 146,
+                                        lineNumber: 151,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                         onClick: onClose,
-                                        className: "px-3 py-1 border rounded text-sm",
+                                        className: "px-3 py-1 rounded-lg border border-gray-400 text-gray-200",
                                         children: "Close"
                                     }, void 0, false, {
                                         fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 147,
+                                        lineNumber: 154,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                         onClick: save,
-                                        className: "px-4 py-2 bg-indigo-600 text-white rounded",
+                                        className: "px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg shadow",
                                         children: "Save"
                                     }, void 0, false, {
                                         fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 148,
+                                        lineNumber: 157,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/frontend/components/SettingsModal.js",
-                                lineNumber: 145,
+                                lineNumber: 150,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/frontend/components/SettingsModal.js",
-                        lineNumber: 137,
+                        lineNumber: 139,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[70vh] overflow-auto pr-2",
+                        className: "grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[70vh] overflow-y-auto pr-2",
                         children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "bg-gray-50 dark:bg-gray-900 p-4 rounded",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                        className: "font-semibold mb-2",
-                                        children: "Theme"
-                                    }, void 0, false, {
-                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 155,
-                                        columnNumber: 13
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Section, {
+                                title: "Theme",
+                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
+                                    label: "Theme mode",
+                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                        value: local.theme,
+                                        onChange: (e)=>update("theme", e.target.value),
+                                        className: "w-full p-2 rounded bg-white/10 border border-white/20",
                                         children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Label, {
-                                                children: "Theme mode"
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                value: "system",
+                                                children: "System"
                                             }, void 0, false, {
                                                 fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 157,
-                                                columnNumber: 15
+                                                lineNumber: 177,
+                                                columnNumber: 17
                                             }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
-                                                value: local.theme,
-                                                onChange: (e)=>update('theme', e.target.value),
-                                                className: "w-full p-2 border rounded dark:bg-gray-700",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                        value: "system",
-                                                        children: "System (follow OS)"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                                        lineNumber: 159,
-                                                        columnNumber: 17
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                        value: "light",
-                                                        children: "Light"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                                        lineNumber: 160,
-                                                        columnNumber: 17
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                        value: "dark",
-                                                        children: "Dark"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                                        lineNumber: 161,
-                                                        columnNumber: 17
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 158,
-                                                columnNumber: 15
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 156,
-                                        columnNumber: 13
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                lineNumber: 154,
-                                columnNumber: 11
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "bg-gray-50 dark:bg-gray-900 p-4 rounded",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                        className: "font-semibold mb-2",
-                                        children: "Default Task"
-                                    }, void 0, false, {
-                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 168,
-                                        columnNumber: 13
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Label, {
-                                                children: "Default task duration (minutes)"
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                value: "light",
+                                                children: "Light"
                                             }, void 0, false, {
                                                 fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 170,
-                                                columnNumber: 15
+                                                lineNumber: 178,
+                                                columnNumber: 17
                                             }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                type: "number",
-                                                min: 1,
-                                                value: local.defaultDuration,
-                                                onChange: (e)=>update('defaultDuration', Number(e.target.value)),
-                                                className: "w-full p-2 border rounded dark:bg-gray-700"
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                value: "dark",
+                                                children: "Dark"
                                             }, void 0, false, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 171,
-                                                columnNumber: 15
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 169,
-                                        columnNumber: 13
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Label, {
-                                                children: "Auto-schedule on creation"
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 174,
-                                                columnNumber: 15
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "flex items-center gap-2",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                        id: "autoschedule",
-                                                        type: "checkbox",
-                                                        checked: local.autoschedule.enabled,
-                                                        onChange: (e)=>update('autoschedule.enabled', e.target.checked)
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                                        lineNumber: 176,
-                                                        columnNumber: 17
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                        htmlFor: "autoschedule",
-                                                        children: "Enable auto scheduling"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                                        lineNumber: 177,
-                                                        columnNumber: 17
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 175,
-                                                columnNumber: 15
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "mt-2",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Label, {
-                                                        children: "Autoschedule strategy"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                                        lineNumber: 180,
-                                                        columnNumber: 17
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
-                                                        value: local.autoschedule.strategy,
-                                                        onChange: (e)=>update('autoschedule.strategy', e.target.value),
-                                                        className: "w-full p-2 border rounded dark:bg-gray-700",
-                                                        children: [
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                value: "deadline",
-                                                                children: "By nearest deadline"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                                lineNumber: 182,
-                                                                columnNumber: 19
-                                                            }, this),
-                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                                value: "priority",
-                                                                children: "By priority"
-                                                            }, void 0, false, {
-                                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                                lineNumber: 183,
-                                                                columnNumber: 19
-                                                            }, this)
-                                                        ]
-                                                    }, void 0, true, {
-                                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                                        lineNumber: 181,
-                                                        columnNumber: 17
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
                                                 fileName: "[project]/frontend/components/SettingsModal.js",
                                                 lineNumber: 179,
-                                                columnNumber: 15
+                                                columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 173,
+                                        lineNumber: 172,
+                                        columnNumber: 15
+                                    }, this)
+                                }, void 0, false, {
+                                    fileName: "[project]/frontend/components/SettingsModal.js",
+                                    lineNumber: 171,
+                                    columnNumber: 13
+                                }, this)
+                            }, void 0, false, {
+                                fileName: "[project]/frontend/components/SettingsModal.js",
+                                lineNumber: 170,
+                                columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Section, {
+                                title: "Default Task",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
+                                        label: "Default duration (minutes)",
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                            type: "number",
+                                            min: "1",
+                                            value: local.defaultDuration,
+                                            onChange: (e)=>update("defaultDuration", Number(e.target.value)),
+                                            className: "w-full p-2 rounded bg-white/10 border border-white/20"
+                                        }, void 0, false, {
+                                            fileName: "[project]/frontend/components/SettingsModal.js",
+                                            lineNumber: 187,
+                                            columnNumber: 15
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/frontend/components/SettingsModal.js",
+                                        lineNumber: 186,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
+                                        label: "Auto-schedule on creation",
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "flex items-center gap-2",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                    type: "checkbox",
+                                                    checked: local.autoschedule.enabled,
+                                                    onChange: (e)=>update("autoschedule.enabled", e.target.checked)
+                                                }, void 0, false, {
+                                                    fileName: "[project]/frontend/components/SettingsModal.js",
+                                                    lineNumber: 198,
+                                                    columnNumber: 17
+                                                }, this),
+                                                "Enable auto scheduling"
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/frontend/components/SettingsModal.js",
+                                            lineNumber: 197,
+                                            columnNumber: 15
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/frontend/components/SettingsModal.js",
+                                        lineNumber: 196,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
+                                        label: "Strategy",
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                            value: local.autoschedule.strategy,
+                                            onChange: (e)=>update("autoschedule.strategy", e.target.value),
+                                            className: "w-full p-2 rounded bg-white/10 border border-white/20",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                    value: "deadline",
+                                                    children: "Nearest deadline"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/frontend/components/SettingsModal.js",
+                                                    lineNumber: 213,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                    value: "priority",
+                                                    children: "By priority"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/frontend/components/SettingsModal.js",
+                                                    lineNumber: 214,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/frontend/components/SettingsModal.js",
+                                            lineNumber: 208,
+                                            columnNumber: 15
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/frontend/components/SettingsModal.js",
+                                        lineNumber: 207,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/frontend/components/SettingsModal.js",
-                                lineNumber: 167,
+                                lineNumber: 185,
                                 columnNumber: 11
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "bg-gray-50 dark:bg-gray-900 p-4 rounded",
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Section, {
+                                title: "Notifications",
                                 children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                        className: "font-semibold mb-2",
-                                        children: "Notifications"
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "flex items-center gap-2",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                    type: "checkbox",
+                                                    checked: local.notifications.enabled,
+                                                    onChange: (e)=>update("notifications.enabled", e.target.checked)
+                                                }, void 0, false, {
+                                                    fileName: "[project]/frontend/components/SettingsModal.js",
+                                                    lineNumber: 223,
+                                                    columnNumber: 17
+                                                }, this),
+                                                "Enable notifications"
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/frontend/components/SettingsModal.js",
+                                            lineNumber: 222,
+                                            columnNumber: 15
+                                        }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 191,
-                                        columnNumber: 13
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Label, {
-                                                children: "Enable notifications"
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 193,
-                                                columnNumber: 15
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "flex items-center gap-2",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                        type: "checkbox",
-                                                        checked: local.notifications.enabled,
-                                                        onChange: (e)=>update('notifications.enabled', e.target.checked)
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                                        lineNumber: 195,
-                                                        columnNumber: 17
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        children: "Enabled"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                                        lineNumber: 196,
-                                                        columnNumber: 17
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 194,
-                                                columnNumber: 15
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 192,
-                                        columnNumber: 13
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Label, {
-                                                children: "Desktop notifications"
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 200,
-                                                columnNumber: 15
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "flex items-center gap-2",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                        type: "checkbox",
-                                                        checked: local.notifications.desktop,
-                                                        onChange: (e)=>update('notifications.desktop', e.target.checked)
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                                        lineNumber: 202,
-                                                        columnNumber: 17
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                        children: "Allow desktop"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                                        lineNumber: 203,
-                                                        columnNumber: 17
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 201,
-                                                columnNumber: 15
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 199,
-                                        columnNumber: 13
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Label, {
-                                                children: "Reminder minutes before deadline"
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 207,
-                                                columnNumber: 15
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                type: "number",
-                                                min: 0,
-                                                value: local.notifications.reminderMinutesBefore,
-                                                onChange: (e)=>update('notifications.reminderMinutesBefore', Number(e.target.value)),
-                                                className: "w-full p-2 border rounded dark:bg-gray-700"
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 208,
-                                                columnNumber: 15
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 206,
-                                        columnNumber: 13
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                lineNumber: 190,
-                                columnNumber: 11
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "bg-gray-50 dark:bg-gray-900 p-4 rounded",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                        className: "font-semibold mb-2",
-                                        children: "Focus Mode (Pomodoro)"
-                                    }, void 0, false, {
-                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 214,
+                                        lineNumber: 221,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
@@ -1104,81 +936,110 @@ function SettingsModal({ open, onClose }) {
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
                                                     type: "checkbox",
-                                                    checked: local.focus.enabled,
-                                                    onChange: (e)=>update('focus.enabled', e.target.checked)
+                                                    checked: local.notifications.desktop,
+                                                    onChange: (e)=>update("notifications.desktop", e.target.checked)
                                                 }, void 0, false, {
                                                     fileName: "[project]/frontend/components/SettingsModal.js",
-                                                    lineNumber: 217,
+                                                    lineNumber: 234,
                                                     columnNumber: 17
                                                 }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                    children: "Enable Focus Mode"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/frontend/components/SettingsModal.js",
-                                                    lineNumber: 218,
-                                                    columnNumber: 17
-                                                }, this)
+                                                "Desktop notifications"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/frontend/components/SettingsModal.js",
-                                            lineNumber: 216,
+                                            lineNumber: 233,
                                             columnNumber: 15
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 215,
+                                        lineNumber: 232,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Label, {
-                                                children: "Session (minutes)"
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 222,
-                                                columnNumber: 15
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                type: "number",
-                                                min: 5,
-                                                value: local.focus.sessionMinutes,
-                                                onChange: (e)=>update('focus.sessionMinutes', Number(e.target.value)),
-                                                className: "w-full p-2 border rounded dark:bg-gray-700"
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 223,
-                                                columnNumber: 15
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
+                                        label: "Reminder minutes before deadline",
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                            type: "number",
+                                            value: local.notifications.reminderMinutesBefore,
+                                            onChange: (e)=>update("notifications.reminderMinutesBefore", Number(e.target.value)),
+                                            className: "w-full p-2 rounded bg-white/10 border border-white/20"
+                                        }, void 0, false, {
+                                            fileName: "[project]/frontend/components/SettingsModal.js",
+                                            lineNumber: 244,
+                                            columnNumber: 15
+                                        }, this)
+                                    }, void 0, false, {
                                         fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 221,
+                                        lineNumber: 243,
+                                        columnNumber: 13
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/frontend/components/SettingsModal.js",
+                                lineNumber: 220,
+                                columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Section, {
+                                title: "Focus Mode (Pomodoro)",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "flex items-center gap-2",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                    type: "checkbox",
+                                                    checked: local.focus.enabled,
+                                                    onChange: (e)=>update("focus.enabled", e.target.checked)
+                                                }, void 0, false, {
+                                                    fileName: "[project]/frontend/components/SettingsModal.js",
+                                                    lineNumber: 262,
+                                                    columnNumber: 17
+                                                }, this),
+                                                "Enable Focus Mode"
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/frontend/components/SettingsModal.js",
+                                            lineNumber: 261,
+                                            columnNumber: 15
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/frontend/components/SettingsModal.js",
+                                        lineNumber: 260,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Label, {
-                                                children: "Break (minutes)"
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 226,
-                                                columnNumber: 15
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                type: "number",
-                                                min: 1,
-                                                value: local.focus.breakMinutes,
-                                                onChange: (e)=>update('focus.breakMinutes', Number(e.target.value)),
-                                                className: "w-full p-2 border rounded dark:bg-gray-700"
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 227,
-                                                columnNumber: 15
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
+                                        label: "Session (minutes)",
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                            type: "number",
+                                            min: "5",
+                                            value: local.focus.sessionMinutes,
+                                            onChange: (e)=>update("focus.sessionMinutes", Number(e.target.value)),
+                                            className: "w-full p-2 rounded bg-white/10 border border-white/20"
+                                        }, void 0, false, {
+                                            fileName: "[project]/frontend/components/SettingsModal.js",
+                                            lineNumber: 272,
+                                            columnNumber: 15
+                                        }, this)
+                                    }, void 0, false, {
                                         fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 225,
+                                        lineNumber: 271,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
+                                        label: "Break (minutes)",
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                            type: "number",
+                                            min: "1",
+                                            value: local.focus.breakMinutes,
+                                            onChange: (e)=>update("focus.breakMinutes", Number(e.target.value)),
+                                            className: "w-full p-2 rounded bg-white/10 border border-white/20"
+                                        }, void 0, false, {
+                                            fileName: "[project]/frontend/components/SettingsModal.js",
+                                            lineNumber: 284,
+                                            columnNumber: 15
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/frontend/components/SettingsModal.js",
+                                        lineNumber: 283,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
@@ -1188,118 +1049,80 @@ function SettingsModal({ open, onClose }) {
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
                                                     type: "checkbox",
                                                     checked: local.focus.autoStartNext,
-                                                    onChange: (e)=>update('focus.autoStartNext', e.target.checked)
+                                                    onChange: (e)=>update("focus.autoStartNext", e.target.checked)
                                                 }, void 0, false, {
                                                     fileName: "[project]/frontend/components/SettingsModal.js",
-                                                    lineNumber: 231,
+                                                    lineNumber: 297,
                                                     columnNumber: 17
                                                 }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                    children: "Auto-start next session"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/frontend/components/SettingsModal.js",
-                                                    lineNumber: 232,
-                                                    columnNumber: 17
-                                                }, this)
+                                                "Auto-start next session"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/frontend/components/SettingsModal.js",
-                                            lineNumber: 230,
+                                            lineNumber: 296,
                                             columnNumber: 15
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 229,
+                                        lineNumber: 295,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/frontend/components/SettingsModal.js",
-                                lineNumber: 213,
+                                lineNumber: 259,
                                 columnNumber: 11
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "bg-gray-50 dark:bg-gray-900 p-4 rounded",
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Section, {
+                                title: "Preferred Study Times",
                                 children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                        className: "font-semibold mb-2",
-                                        children: "Preferred Study Times"
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
+                                        label: "Start Hour (0–23)",
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                            type: "number",
+                                            min: "0",
+                                            max: "23",
+                                            value: local.preferredStudy.startHour,
+                                            onChange: (e)=>update("preferredStudy.startHour", Number(e.target.value)),
+                                            className: "w-full p-2 rounded bg-white/10 border border-white/20"
+                                        }, void 0, false, {
+                                            fileName: "[project]/frontend/components/SettingsModal.js",
+                                            lineNumber: 310,
+                                            columnNumber: 15
+                                        }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 239,
+                                        lineNumber: 309,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Label, {
-                                                children: "Start Hour (0-23)"
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 241,
-                                                columnNumber: 15
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                type: "number",
-                                                min: 0,
-                                                max: 23,
-                                                value: local.preferredStudy.startHour,
-                                                onChange: (e)=>update('preferredStudy.startHour', Number(e.target.value)),
-                                                className: "w-full p-2 border rounded dark:bg-gray-700"
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 242,
-                                                columnNumber: 15
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
+                                        label: "End Hour (0–23)",
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                            type: "number",
+                                            min: "0",
+                                            max: "23",
+                                            value: local.preferredStudy.endHour,
+                                            onChange: (e)=>update("preferredStudy.endHour", Number(e.target.value)),
+                                            className: "w-full p-2 rounded bg-white/10 border border-white/20"
+                                        }, void 0, false, {
+                                            fileName: "[project]/frontend/components/SettingsModal.js",
+                                            lineNumber: 323,
+                                            columnNumber: 15
+                                        }, this)
+                                    }, void 0, false, {
                                         fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 240,
-                                        columnNumber: 13
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Label, {
-                                                children: "End Hour (0-23)"
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 245,
-                                                columnNumber: 15
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                type: "number",
-                                                min: 0,
-                                                max: 23,
-                                                value: local.preferredStudy.endHour,
-                                                onChange: (e)=>update('preferredStudy.endHour', Number(e.target.value)),
-                                                className: "w-full p-2 border rounded dark:bg-gray-700"
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 246,
-                                                columnNumber: 15
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 244,
+                                        lineNumber: 322,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/frontend/components/SettingsModal.js",
-                                lineNumber: 238,
+                                lineNumber: 308,
                                 columnNumber: 11
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "bg-gray-50 dark:bg-gray-900 p-4 rounded",
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Section, {
+                                title: "Reminders & Language",
                                 children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                        className: "font-semibold mb-2",
-                                        children: "Reminders & Language"
-                                    }, void 0, false, {
-                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 252,
-                                        columnNumber: 13
-                                    }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "flex items-center gap-2",
@@ -1307,246 +1130,201 @@ function SettingsModal({ open, onClose }) {
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
                                                     type: "checkbox",
                                                     checked: local.reminders.dailySummary,
-                                                    onChange: (e)=>update('reminders.dailySummary', e.target.checked)
+                                                    onChange: (e)=>update("reminders.dailySummary", e.target.checked)
                                                 }, void 0, false, {
                                                     fileName: "[project]/frontend/components/SettingsModal.js",
-                                                    lineNumber: 255,
+                                                    lineNumber: 340,
                                                     columnNumber: 17
                                                 }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                    children: "Daily summary email (if enabled)"
+                                                "Daily summary email"
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/frontend/components/SettingsModal.js",
+                                            lineNumber: 339,
+                                            columnNumber: 15
+                                        }, this)
+                                    }, void 0, false, {
+                                        fileName: "[project]/frontend/components/SettingsModal.js",
+                                        lineNumber: 338,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
+                                        label: "Language",
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                            value: local.language,
+                                            onChange: (e)=>update("language", e.target.value),
+                                            className: "w-full p-2 rounded bg-white/10 border border-white/20",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                    value: "en",
+                                                    children: "English"
                                                 }, void 0, false, {
                                                     fileName: "[project]/frontend/components/SettingsModal.js",
-                                                    lineNumber: 256,
+                                                    lineNumber: 357,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                    value: "hi",
+                                                    children: "Hindi"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/frontend/components/SettingsModal.js",
+                                                    lineNumber: 358,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                    value: "mr",
+                                                    children: "Marathi"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/frontend/components/SettingsModal.js",
+                                                    lineNumber: 359,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                    value: "kn",
+                                                    children: "Kannada"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/frontend/components/SettingsModal.js",
+                                                    lineNumber: 360,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                    value: "ta",
+                                                    children: "Tamil"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/frontend/components/SettingsModal.js",
+                                                    lineNumber: 361,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/frontend/components/SettingsModal.js",
-                                            lineNumber: 254,
+                                            lineNumber: 352,
                                             columnNumber: 15
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 253,
-                                        columnNumber: 13
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Label, {
-                                                children: "Language"
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 260,
-                                                columnNumber: 15
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
-                                                value: local.language,
-                                                onChange: (e)=>update('language', e.target.value),
-                                                className: "w-full p-2 border rounded dark:bg-gray-700",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                        value: "en",
-                                                        children: "English"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                                        lineNumber: 262,
-                                                        columnNumber: 17
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                        value: "hi",
-                                                        children: "हिन्दी (Hindi)"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                                        lineNumber: 263,
-                                                        columnNumber: 17
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                        value: "mr",
-                                                        children: "मराठी (Marathi)"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                                        lineNumber: 264,
-                                                        columnNumber: 17
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                        value: "kn",
-                                                        children: "ಕನ್ನಡ (Kannada)"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                                        lineNumber: 265,
-                                                        columnNumber: 17
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                        value: "ta",
-                                                        children: "தமிழ் (Tamil)"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                                        lineNumber: 266,
-                                                        columnNumber: 17
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 261,
-                                                columnNumber: 15
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 259,
+                                        lineNumber: 351,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/frontend/components/SettingsModal.js",
-                                lineNumber: 251,
+                                lineNumber: 337,
                                 columnNumber: 11
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "bg-gray-50 dark:bg-gray-900 p-4 rounded",
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Section, {
+                                title: "Data & Account",
                                 children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                        className: "font-semibold mb-2",
-                                        children: "Data & Account"
-                                    }, void 0, false, {
-                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 273,
-                                        columnNumber: 13
-                                    }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                             onClick: ()=>{
-                                                const payload = {
-                                                    settings: local
-                                                };
                                                 const blob = new Blob([
-                                                    JSON.stringify(payload, null, 2)
+                                                    JSON.stringify({
+                                                        settings: local
+                                                    }, null, 2)
                                                 ], {
-                                                    type: 'application/json'
+                                                    type: "application/json"
                                                 });
                                                 const url = URL.createObjectURL(blob);
-                                                const a = document.createElement('a');
+                                                const a = document.createElement("a");
                                                 a.href = url;
-                                                a.download = 'student_optimizer_settings.json';
+                                                a.download = "student_optimizer_settings.json";
                                                 a.click();
-                                                URL.revokeObjectURL(url);
                                             },
-                                            className: "px-3 py-2 bg-white border rounded",
+                                            className: "px-3 py-2 bg-white/10 rounded border border-white/20 hover:bg-white/20",
                                             children: "Export settings"
                                         }, void 0, false, {
                                             fileName: "[project]/frontend/components/SettingsModal.js",
-                                            lineNumber: 275,
+                                            lineNumber: 369,
                                             columnNumber: 15
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 274,
+                                        lineNumber: 368,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                                className: "block text-sm text-gray-600 dark:text-gray-300 mb-1",
-                                                children: "Import settings (JSON)"
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 288,
-                                                columnNumber: 15
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                                type: "file",
-                                                accept: "application/json",
-                                                onChange: (e)=>{
-                                                    const f = e.target.files && e.target.files[0];
-                                                    if (!f) return;
-                                                    const reader = new FileReader();
-                                                    reader.onload = (ev)=>{
-                                                        try {
-                                                            const parsed = JSON.parse(ev.target.result);
-                                                            if (parsed && parsed.settings) {
-                                                                setLocal(parsed.settings);
-                                                                alert('Imported settings. Press Save to apply.');
-                                                            } else {
-                                                                alert('File does not contain settings');
-                                                            }
-                                                        } catch (err) {
-                                                            alert('Invalid JSON');
-                                                        }
-                                                    };
-                                                    reader.readAsText(f);
-                                                },
-                                                className: "w-full"
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 289,
-                                                columnNumber: 15
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
+                                        label: "Import settings (JSON)",
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                            type: "file",
+                                            accept: "application/json",
+                                            className: "w-full bg-white/10 border border-white/20 p-2 rounded",
+                                            onChange: (e)=>{
+                                                const file = e.target.files?.[0];
+                                                if (!file) return;
+                                                const reader = new FileReader();
+                                                reader.onload = (ev)=>{
+                                                    try {
+                                                        const parsed = JSON.parse(ev.target.result);
+                                                        if (parsed.settings) {
+                                                            setLocal(parsed.settings);
+                                                            alert("Settings imported. Press Save to apply.");
+                                                        } else alert("Invalid settings JSON");
+                                                    } catch  {
+                                                        alert("Invalid JSON file");
+                                                    }
+                                                };
+                                                reader.readAsText(file);
+                                            }
+                                        }, void 0, false, {
+                                            fileName: "[project]/frontend/components/SettingsModal.js",
+                                            lineNumber: 388,
+                                            columnNumber: 15
+                                        }, this)
+                                    }, void 0, false, {
                                         fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 287,
+                                        lineNumber: 387,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Row, {
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(Label, {
-                                                children: "Account actions"
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 311,
-                                                columnNumber: 15
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "flex gap-2",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                        onClick: ()=>{
-                                                            window.location.href = '/logout';
-                                                        },
-                                                        className: "px-3 py-2 border rounded text-sm",
-                                                        children: "Logout"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                                        lineNumber: 313,
-                                                        columnNumber: 17
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                        onClick: ()=>{
-                                                            if (!confirm('This will clear all settings from this browser. Continue?')) return;
-                                                            localStorage.removeItem(STORAGE_KEY);
-                                                            setLocal(defaultSettings);
-                                                            setSettings(defaultSettings);
-                                                        },
-                                                        className: "px-3 py-2 border rounded text-sm text-red-600",
-                                                        children: "Clear local settings"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/frontend/components/SettingsModal.js",
-                                                        lineNumber: 314,
-                                                        columnNumber: 17
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/frontend/components/SettingsModal.js",
-                                                lineNumber: 312,
-                                                columnNumber: 15
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
+                                        label: "Account actions",
+                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "flex gap-2",
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                    onClick: ()=>window.location.href = "/logout",
+                                                    className: "px-3 py-2 border border-white/20 rounded hover:bg-white/10",
+                                                    children: "Logout"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/frontend/components/SettingsModal.js",
+                                                    lineNumber: 414,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                                    onClick: ()=>{
+                                                        if (!confirm("Clear all settings in this browser?")) return;
+                                                        localStorage.removeItem(STORAGE_KEY);
+                                                        setSettings(defaultSettings);
+                                                        setLocal(defaultSettings);
+                                                    },
+                                                    className: "px-3 py-2 border border-red-400 text-red-400 rounded hover:bg-red-400/10",
+                                                    children: "Clear local settings"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/frontend/components/SettingsModal.js",
+                                                    lineNumber: 421,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/frontend/components/SettingsModal.js",
+                                            lineNumber: 413,
+                                            columnNumber: 15
+                                        }, this)
+                                    }, void 0, false, {
                                         fileName: "[project]/frontend/components/SettingsModal.js",
-                                        lineNumber: 310,
+                                        lineNumber: 412,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/frontend/components/SettingsModal.js",
-                                lineNumber: 272,
+                                lineNumber: 367,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/frontend/components/SettingsModal.js",
-                        lineNumber: 152,
+                        lineNumber: 167,
                         columnNumber: 9
                     }, this)
                 ]
@@ -1558,7 +1336,7 @@ function SettingsModal({ open, onClose }) {
         ]
     }, void 0, true, {
         fileName: "[project]/frontend/components/SettingsModal.js",
-        lineNumber: 134,
+        lineNumber: 128,
         columnNumber: 5
     }, this);
 }
@@ -1570,8 +1348,8 @@ _s2(SettingsModal, "xWMeaVOm/j5kL1fukEyxISnV6YM=", false, function() {
 _c3 = SettingsModal;
 var _c, _c1, _c2, _c3;
 __turbopack_context__.k.register(_c, "SettingsProvider");
-__turbopack_context__.k.register(_c1, "Row");
-__turbopack_context__.k.register(_c2, "Label");
+__turbopack_context__.k.register(_c1, "Section");
+__turbopack_context__.k.register(_c2, "Row");
 __turbopack_context__.k.register(_c3, "SettingsModal");
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
@@ -1603,30 +1381,26 @@ function TaskForm({ userId = 1, onCreated = ()=>{} }) {
     const [category, setCategory] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])("");
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    // Try to read settings from provider (wrapped in try so no crash)
     let settings = null;
     try {
-        const ctx = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$SettingsModal$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useSettings"])();
-        settings = ctx.settings;
-    } catch (err) {
-        // provider missing → fallback
+        settings = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$SettingsModal$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useSettings"])().settings;
+    } catch  {
         settings = null;
     }
-    // Apply defaultDuration from SettingsModal
+    // Load default duration
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "TaskForm.useEffect": ()=>{
-            if (settings && settings.defaultDuration) {
+            if (settings?.defaultDuration) {
                 setDurationMinutes(settings.defaultDuration);
-            } else {
-                // fallback to localStorage (old logic)
-                try {
-                    const raw = localStorage.getItem("app_settings");
-                    if (raw) {
-                        const parsed = JSON.parse(raw);
-                        if (parsed.defaultDuration) setDurationMinutes(parsed.defaultDuration);
-                    }
-                } catch  {}
+                return;
             }
+            try {
+                const raw = localStorage.getItem("app_settings");
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (parsed.defaultDuration) setDurationMinutes(parsed.defaultDuration);
+                }
+            } catch  {}
         }
     }["TaskForm.useEffect"], [
         settings
@@ -1638,13 +1412,12 @@ function TaskForm({ userId = 1, onCreated = ()=>{} }) {
         setPriority("");
         setCategory("");
     }
-    // Safe JSON parser
     async function safeParse(res) {
         const text = await res.text();
         try {
             return text ? JSON.parse(text) : {};
-        } catch (err) {
-            throw new Error(`Server returned non-JSON data (status ${res.status}):\n\n${text.slice(0, 2000)}`);
+        } catch  {
+            throw new Error(`Invalid JSON response:\n${text}`);
         }
     }
     async function handleSubmit(e) {
@@ -1673,70 +1446,70 @@ function TaskForm({ userId = 1, onCreated = ()=>{} }) {
                 body: JSON.stringify(payload)
             });
             const json = await safeParse(res);
-            if (!res.ok) {
-                throw new Error(json.error || json.message || `Status ${res.status}`);
-            }
+            if (!res.ok) throw new Error(json.error || json.message);
             resetForm();
             onCreated(json);
         } catch (err) {
-            console.error("TaskForm create error:", err);
-            setError(err.message || "Error creating task");
+            setError(err.message);
         } finally{
             setLoading(false);
         }
     }
+    // -------------------------
+    // UI DESIGN — BLUE THEME
+    // -------------------------
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "bg-white dark:bg-gray-800 p-4 rounded shadow text-gray-900 dark:text-gray-100",
+        className: "bg-white/10 dark:bg-gray-900/40 backdrop-blur-sm border border-white/20 rounded-xl p-6 shadow-lg",
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                className: "font-semibold mb-3",
-                children: "Create Task"
+                className: "text-xl font-semibold text-white mb-4 tracking-wide",
+                children: "Create New Task"
             }, void 0, false, {
                 fileName: "[project]/frontend/components/TaskForm.js",
-                lineNumber: 110,
+                lineNumber: 103,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
                 onSubmit: handleSubmit,
-                className: "space-y-3",
+                className: "space-y-4",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                className: "block text-sm",
-                                children: "Title"
+                                className: "text-blue-200 text-sm",
+                                children: "Task Title"
                             }, void 0, false, {
                                 fileName: "[project]/frontend/components/TaskForm.js",
-                                lineNumber: 115,
+                                lineNumber: 111,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
                                 value: title,
                                 onChange: (e)=>setTitle(e.target.value),
                                 placeholder: "What do you need to do?",
-                                className: "mt-1 w-full border p-2 rounded dark:bg-gray-700"
+                                className: "mt-1 w-full p-2 bg-white/10 text-white placeholder-gray-300 border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                             }, void 0, false, {
                                 fileName: "[project]/frontend/components/TaskForm.js",
-                                lineNumber: 116,
+                                lineNumber: 112,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/frontend/components/TaskForm.js",
-                        lineNumber: 114,
+                        lineNumber: 110,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "grid grid-cols-2 gap-3",
+                        className: "grid grid-cols-2 gap-4",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                        className: "block text-sm",
-                                        children: "Duration (min)"
+                                        className: "text-blue-200 text-sm",
+                                        children: "Duration (minutes)"
                                     }, void 0, false, {
                                         fileName: "[project]/frontend/components/TaskForm.js",
-                                        lineNumber: 127,
+                                        lineNumber: 123,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -1744,150 +1517,154 @@ function TaskForm({ userId = 1, onCreated = ()=>{} }) {
                                         min: 5,
                                         value: durationMinutes,
                                         onChange: (e)=>setDurationMinutes(e.target.value),
-                                        className: "mt-1 w-full border p-2 rounded dark:bg-gray-700"
+                                        className: "mt-1 w-full p-2 bg-white/10 text-white border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                                     }, void 0, false, {
                                         fileName: "[project]/frontend/components/TaskForm.js",
-                                        lineNumber: 128,
+                                        lineNumber: 124,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/frontend/components/TaskForm.js",
-                                lineNumber: 126,
+                                lineNumber: 122,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                        className: "block text-sm",
+                                        className: "text-blue-200 text-sm",
                                         children: "Priority"
                                     }, void 0, false, {
                                         fileName: "[project]/frontend/components/TaskForm.js",
-                                        lineNumber: 138,
+                                        lineNumber: 134,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
                                         value: priority,
                                         onChange: (e)=>setPriority(e.target.value),
-                                        className: "mt-1 w-full border p-2 rounded dark:bg-gray-700",
+                                        className: "mt-1 w-full p-2 bg-white/10 text-white border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none",
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                 value: "",
-                                                children: "—"
+                                                className: "text-black",
+                                                children: "None"
                                             }, void 0, false, {
                                                 fileName: "[project]/frontend/components/TaskForm.js",
-                                                lineNumber: 144,
+                                                lineNumber: 140,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                 value: "high",
+                                                className: "text-black",
                                                 children: "High"
                                             }, void 0, false, {
                                                 fileName: "[project]/frontend/components/TaskForm.js",
-                                                lineNumber: 145,
+                                                lineNumber: 141,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                 value: "medium",
+                                                className: "text-black",
                                                 children: "Medium"
                                             }, void 0, false, {
                                                 fileName: "[project]/frontend/components/TaskForm.js",
-                                                lineNumber: 146,
+                                                lineNumber: 142,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
                                                 value: "low",
+                                                className: "text-black",
                                                 children: "Low"
                                             }, void 0, false, {
                                                 fileName: "[project]/frontend/components/TaskForm.js",
-                                                lineNumber: 147,
+                                                lineNumber: 143,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/frontend/components/TaskForm.js",
-                                        lineNumber: 139,
+                                        lineNumber: 135,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/frontend/components/TaskForm.js",
-                                lineNumber: 137,
+                                lineNumber: 133,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/frontend/components/TaskForm.js",
-                        lineNumber: 125,
+                        lineNumber: 121,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                className: "block text-sm",
+                                className: "text-blue-200 text-sm",
                                 children: "Deadline (optional)"
                             }, void 0, false, {
                                 fileName: "[project]/frontend/components/TaskForm.js",
-                                lineNumber: 154,
+                                lineNumber: 150,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
                                 type: "datetime-local",
                                 value: deadline,
                                 onChange: (e)=>setDeadline(e.target.value),
-                                className: "mt-1 w-full border p-2 rounded dark:bg-gray-700"
+                                className: "mt-1 w-full p-2 bg-white/10 text-white border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                             }, void 0, false, {
                                 fileName: "[project]/frontend/components/TaskForm.js",
-                                lineNumber: 155,
+                                lineNumber: 151,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/frontend/components/TaskForm.js",
-                        lineNumber: 153,
+                        lineNumber: 149,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                className: "block text-sm",
+                                className: "text-blue-200 text-sm",
                                 children: "Category"
                             }, void 0, false, {
                                 fileName: "[project]/frontend/components/TaskForm.js",
-                                lineNumber: 165,
+                                lineNumber: 161,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
                                 value: category,
                                 onChange: (e)=>setCategory(e.target.value),
                                 placeholder: "e.g., Study, Exercise",
-                                className: "mt-1 w-full border p-2 rounded dark:bg-gray-700"
+                                className: "mt-1 w-full p-2 bg-white/10 text-white placeholder-gray-300 border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                             }, void 0, false, {
                                 fileName: "[project]/frontend/components/TaskForm.js",
-                                lineNumber: 166,
+                                lineNumber: 162,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/frontend/components/TaskForm.js",
-                        lineNumber: 164,
+                        lineNumber: 160,
                         columnNumber: 9
                     }, this),
                     error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "text-sm text-red-500 whitespace-pre-wrap",
+                        className: "text-red-300 bg-red-500/20 border border-red-400/20 p-2 rounded-lg text-sm",
                         children: error
                     }, void 0, false, {
                         fileName: "[project]/frontend/components/TaskForm.js",
-                        lineNumber: 175,
+                        lineNumber: 172,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "flex gap-2",
+                        className: "flex gap-3",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                 type: "submit",
                                 disabled: loading,
-                                className: "px-4 py-2 bg-indigo-600 text-white rounded",
+                                className: "px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg shadow hover:shadow-blue-500/30 text-white font-medium disabled:opacity-50",
                                 children: loading ? "Saving..." : "Save Task"
                             }, void 0, false, {
                                 fileName: "[project]/frontend/components/TaskForm.js",
@@ -1897,7 +1674,7 @@ function TaskForm({ userId = 1, onCreated = ()=>{} }) {
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                 type: "button",
                                 onClick: resetForm,
-                                className: "px-3 py-2 border rounded",
+                                className: "px-4 py-2 border border-white/20 text-white rounded-lg hover:bg-white/10",
                                 children: "Reset"
                             }, void 0, false, {
                                 fileName: "[project]/frontend/components/TaskForm.js",
@@ -1913,13 +1690,13 @@ function TaskForm({ userId = 1, onCreated = ()=>{} }) {
                 ]
             }, void 0, true, {
                 fileName: "[project]/frontend/components/TaskForm.js",
-                lineNumber: 112,
+                lineNumber: 107,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/frontend/components/TaskForm.js",
-        lineNumber: 109,
+        lineNumber: 100,
         columnNumber: 5
     }, this);
 }
@@ -1953,20 +1730,17 @@ function TasksList({ userId = 1, refreshKey = 0 }) {
     const [tasks, setTasks] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    // Try to read settings (graceful if provider missing)
     let settings = null;
     try {
-        const ctx = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$SettingsModal$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useSettings"])();
-        settings = ctx.settings;
-    } catch (e) {
+        settings = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$SettingsModal$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useSettings"])().settings;
+    } catch  {
         settings = null;
     }
     async function safeJSON(res) {
         const text = await res.text();
         try {
             return text ? JSON.parse(text) : {};
-        } catch (err) {
-            console.warn("Non-JSON from server:", text.slice(0, 500));
+        } catch  {
             return {};
         }
     }
@@ -1976,11 +1750,10 @@ function TasksList({ userId = 1, refreshKey = 0 }) {
         try {
             const res = await fetch(`${__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$api$2e$js__$5b$client$5d$__$28$ecmascript$29$__["API_BASE"]}/api/tasks/user/${userId}`);
             const json = await safeJSON(res);
-            if (!res.ok) throw new Error(json.error || json.message || `Status ${res.status}`);
+            if (!res.ok) throw new Error(json.error || json.message);
             setTasks(json || []);
         } catch (err) {
-            console.error("TasksList fetch error:", err);
-            setError(err.message || "Error fetching tasks");
+            setError(err.message);
             setTasks([]);
         } finally{
             setLoading(false);
@@ -1989,7 +1762,6 @@ function TasksList({ userId = 1, refreshKey = 0 }) {
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "TasksList.useEffect": ()=>{
             fetchTasks();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         }
     }["TasksList.useEffect"], [
         userId,
@@ -2008,8 +1780,7 @@ function TasksList({ userId = 1, refreshKey = 0 }) {
             }
             setTasks((t)=>t.filter((x)=>x.id !== id));
         } catch (err) {
-            console.error("Delete error:", err);
-            alert(err.message || "Failed to delete");
+            alert(err.message);
         }
     }
     async function markDone(task) {
@@ -2029,138 +1800,171 @@ function TasksList({ userId = 1, refreshKey = 0 }) {
             if (!res.ok) throw new Error(json.error || "Update failed");
             setTasks((arr)=>arr.map((t)=>t.id === task.id ? json : t));
         } catch (err) {
-            console.error("Update error:", err);
-            alert(err.message || "Failed to update task");
+            alert(err.message);
         }
     }
-    // Optional: hide completed if setting says so (example)
-    const hideCompleted = settings && settings.hideCompletedTasks;
-    const visibleTasks = hideCompleted ? tasks.filter((t)=>t.status !== 'done') : tasks;
+    const hideCompleted = settings?.hideCompletedTasks;
+    const visibleTasks = hideCompleted ? tasks.filter((t)=>t.status !== "done") : tasks;
+    // ---------------------------
+    // BLUE PROFESSIONAL UI
+    // ---------------------------
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "bg-white dark:bg-gray-800 p-4 rounded shadow dark:shadow-none text-gray-900 dark:text-gray-100",
+        className: "bg-white/10 dark:bg-gray-900/40 backdrop-blur-sm border border-white/20 rounded-xl p-6 shadow-lg",
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                className: "font-semibold mb-3",
+                className: "text-xl font-semibold text-white mb-4 tracking-wide",
                 children: "Your Tasks"
             }, void 0, false, {
                 fileName: "[project]/frontend/components/TasksList.js",
-                lineNumber: 97,
+                lineNumber: 101,
                 columnNumber: 7
             }, this),
             loading && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "text-sm text-gray-500 dark:text-gray-400",
-                children: "Loading..."
+                className: "text-blue-300 text-sm",
+                children: "Loading tasks..."
             }, void 0, false, {
                 fileName: "[project]/frontend/components/TasksList.js",
-                lineNumber: 99,
-                columnNumber: 19
+                lineNumber: 106,
+                columnNumber: 9
             }, this),
             error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "text-sm text-red-500",
+                className: "text-red-300 bg-red-500/20 p-2 rounded text-sm border border-red-400/20",
                 children: error
             }, void 0, false, {
                 fileName: "[project]/frontend/components/TasksList.js",
-                lineNumber: 100,
-                columnNumber: 17
+                lineNumber: 110,
+                columnNumber: 9
             }, this),
             !loading && visibleTasks.length === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "text-sm text-gray-500 dark:text-gray-400",
+                className: "text-blue-200/70 text-sm",
                 children: "No tasks yet"
             }, void 0, false, {
                 fileName: "[project]/frontend/components/TasksList.js",
-                lineNumber: 103,
+                lineNumber: 116,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
-                className: "divide-y divide-gray-100 dark:divide-gray-700 mt-2",
-                children: visibleTasks.map((t)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
-                        className: "py-3 flex items-start justify-between gap-3",
+                className: "mt-3 space-y-3",
+                children: visibleTasks.map((t)=>{
+                    const isDone = t.status === "done";
+                    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
+                        className: "   p-4 rounded-lg border border-white/10    bg-white-5 dark:bg-gray-900/50    hover:bg-white-10 hover:border-blue-400-30    transition-all shadow    flex justify-between items-start gap-3   ",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "flex items-center gap-2",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                            onClick: ()=>markDone(t),
-                                            className: `w-6 h-6 rounded-full border flex items-center justify-center text-xs ${t.status === "done" ? "bg-green-500 text-white" : "bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"}`,
-                                            title: t.status === "done" ? "Mark pending" : "Mark done",
-                                            children: "✓"
-                                        }, void 0, false, {
-                                            fileName: "[project]/frontend/components/TasksList.js",
-                                            lineNumber: 111,
-                                            columnNumber: 17
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: `font-medium ${t.status === "done" ? "line-through text-gray-400 dark:text-gray-500" : ""}`,
-                                                    children: t.title
-                                                }, void 0, false, {
-                                                    fileName: "[project]/frontend/components/TasksList.js",
-                                                    lineNumber: 123,
-                                                    columnNumber: 19
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                    className: "text-xs text-gray-500 dark:text-gray-400",
-                                                    children: [
-                                                        t.category ? `${t.category} • ` : "",
-                                                        t.priority ? `Priority: ${t.priority} • ` : "",
-                                                        t.duration_minutes ? `${t.duration_minutes} min • ` : "",
-                                                        t.deadline ? `Due: ${new Date(t.deadline).toLocaleString()}` : ""
-                                                    ]
-                                                }, void 0, true, {
-                                                    fileName: "[project]/frontend/components/TasksList.js",
-                                                    lineNumber: 126,
-                                                    columnNumber: 19
-                                                }, this)
-                                            ]
-                                        }, void 0, true, {
-                                            fileName: "[project]/frontend/components/TasksList.js",
-                                            lineNumber: 122,
-                                            columnNumber: 17
-                                        }, this)
-                                    ]
-                                }, void 0, true, {
-                                    fileName: "[project]/frontend/components/TasksList.js",
-                                    lineNumber: 110,
-                                    columnNumber: 15
-                                }, this)
-                            }, void 0, false, {
+                                className: "flex items-start gap-3",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                        onClick: ()=>markDone(t),
+                                        title: isDone ? "Mark as pending" : "Mark as done",
+                                        className: `
+                    w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold
+                    border transition-all shadow 
+                    ${isDone ? "bg-green-500 border-green-400 text-white hover:bg-green-600" : "bg-white/10 dark:bg-gray-800 border-white/20 text-blue-300 hover:border-blue-400 hover:text-blue-200"}
+                  `,
+                                        children: "✓"
+                                    }, void 0, false, {
+                                        fileName: "[project]/frontend/components/TasksList.js",
+                                        lineNumber: 138,
+                                        columnNumber: 17
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: `font-semibold text-white ${isDone ? "line-through text-gray-400" : ""}`,
+                                                children: t.title
+                                            }, void 0, false, {
+                                                fileName: "[project]/frontend/components/TasksList.js",
+                                                lineNumber: 154,
+                                                columnNumber: 19
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "text-xs text-blue-200/70 mt-1",
+                                                children: [
+                                                    t.category && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        children: [
+                                                            t.category,
+                                                            " • "
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/frontend/components/TasksList.js",
+                                                        lineNumber: 163,
+                                                        columnNumber: 36
+                                                    }, this),
+                                                    t.priority && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        className: "capitalize",
+                                                        children: [
+                                                            "Priority: ",
+                                                            t.priority,
+                                                            " • "
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/frontend/components/TasksList.js",
+                                                        lineNumber: 165,
+                                                        columnNumber: 23
+                                                    }, this),
+                                                    t.duration_minutes && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        children: [
+                                                            t.duration_minutes,
+                                                            " min • "
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/frontend/components/TasksList.js",
+                                                        lineNumber: 168,
+                                                        columnNumber: 23
+                                                    }, this),
+                                                    t.deadline && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                        children: [
+                                                            "Due: ",
+                                                            new Date(t.deadline).toLocaleString()
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/frontend/components/TasksList.js",
+                                                        lineNumber: 171,
+                                                        columnNumber: 23
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/frontend/components/TasksList.js",
+                                                lineNumber: 162,
+                                                columnNumber: 19
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/frontend/components/TasksList.js",
+                                        lineNumber: 153,
+                                        columnNumber: 17
+                                    }, this)
+                                ]
+                            }, void 0, true, {
                                 fileName: "[project]/frontend/components/TasksList.js",
-                                lineNumber: 109,
-                                columnNumber: 13
+                                lineNumber: 135,
+                                columnNumber: 15
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "flex items-center gap-2",
-                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                    onClick: ()=>handleDelete(t.id),
-                                    className: "text-sm px-2 py-1 border rounded text-red-600 dark:text-red-400",
-                                    children: "Delete"
-                                }, void 0, false, {
-                                    fileName: "[project]/frontend/components/TasksList.js",
-                                    lineNumber: 137,
-                                    columnNumber: 15
-                                }, this)
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                onClick: ()=>handleDelete(t.id),
+                                className: "   px-3 py-1 rounded-lg border text-red-300 border-red-400/40    hover:bg-red-500/20 transition text-sm   ",
+                                children: "Delete"
                             }, void 0, false, {
                                 fileName: "[project]/frontend/components/TasksList.js",
-                                lineNumber: 136,
-                                columnNumber: 13
+                                lineNumber: 178,
+                                columnNumber: 15
                             }, this)
                         ]
                     }, t.id, true, {
                         fileName: "[project]/frontend/components/TasksList.js",
-                        lineNumber: 108,
-                        columnNumber: 11
-                    }, this))
+                        lineNumber: 124,
+                        columnNumber: 13
+                    }, this);
+                })
             }, void 0, false, {
                 fileName: "[project]/frontend/components/TasksList.js",
-                lineNumber: 106,
+                lineNumber: 119,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/frontend/components/TasksList.js",
-        lineNumber: 96,
+        lineNumber: 99,
         columnNumber: 5
     }, this);
 }
@@ -2187,69 +1991,67 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$Se
 ;
 ;
 function MiniBarChart({ data = {} }) {
-    // read settings (graceful)
+    // 1. Access settings safely
     let settings = null;
     try {
         const ctx = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$SettingsModal$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useSettings"])();
         settings = ctx.settings;
-    } catch (e) {
-        settings = null;
-    }
-    // convert data to ordered array (last 7 days)
+    } catch  {}
+    // 2. Prepare chart data
     const labels = Object.keys(data).sort();
     const values = labels.map((k)=>Number(data[k] || 0));
     const max = Math.max(...values, 1);
-    // color adjustments based on theme/settings
-    const barBaseClass = settings && settings.theme === "dark" ? "bg-indigo-500" : "bg-indigo-300";
+    // 3. Theme colors
+    const barColor = settings?.theme === "dark" ? "bg-blue-400 hover:bg-blue-300" : "bg-blue-600 hover:bg-blue-500";
+    const placeholderColor = settings?.theme === "dark" ? "bg-slate-700" : "bg-slate-200";
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "w-full h-24 flex items-end gap-1",
         children: [
-            labels.length === 0 && // show placeholder columns if no data
-            Array.from({
+            labels.length === 0 && Array.from({
                 length: 7
             }).map((_, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "flex-1 h-full flex items-end",
                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "w-full bg-gray-200 dark:bg-gray-700 rounded-sm",
+                        className: `${placeholderColor} w-full rounded-md transition-all`,
                         style: {
-                            height: `${(i + 1) * 8}%`
+                            height: `${(i + 2) * 10}%`
                         }
                     }, void 0, false, {
                         fileName: "[project]/frontend/components/MiniBarChart.js",
-                        lineNumber: 33,
+                        lineNumber: 39,
                         columnNumber: 13
                     }, this)
                 }, i, false, {
                     fileName: "[project]/frontend/components/MiniBarChart.js",
-                    lineNumber: 32,
+                    lineNumber: 38,
                     columnNumber: 11
                 }, this)),
-            labels.map((l, idx)=>{
+            labels.map((label, idx)=>{
                 const v = values[idx];
                 const heightPct = v / max * 100;
                 return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "flex-1 h-full flex items-end",
                     children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        title: `${l}: ${v.toFixed ? v.toFixed(0) : v}`,
-                        className: `${barBaseClass} rounded-sm w-full`,
+                        title: `${label}: ${v}`,
+                        className: `${barColor} w-full rounded-md shadow-sm transition-all duration-300`,
                         style: {
                             height: `${heightPct}%`
                         }
                     }, void 0, false, {
                         fileName: "[project]/frontend/components/MiniBarChart.js",
-                        lineNumber: 43,
+                        lineNumber: 53,
                         columnNumber: 13
                     }, this)
-                }, l, false, {
+                }, label, false, {
                     fileName: "[project]/frontend/components/MiniBarChart.js",
-                    lineNumber: 42,
+                    lineNumber: 52,
                     columnNumber: 11
                 }, this);
             })
         ]
     }, void 0, true, {
         fileName: "[project]/frontend/components/MiniBarChart.js",
-        lineNumber: 28,
+        lineNumber: 34,
         columnNumber: 5
     }, this);
 }
@@ -2274,6 +2076,8 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$
 var __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$next$2f$head$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/frontend/node_modules/next/head.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/frontend/node_modules/react/index.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/frontend/node_modules/next/router.js [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/frontend/node_modules/framer-motion/dist/es/render/components/motion/proxy.mjs [client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$components$2f$AnimatePresence$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/frontend/node_modules/framer-motion/dist/es/components/AnimatePresence/index.mjs [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$SettingsModal$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/frontend/components/SettingsModal.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$TaskForm$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/frontend/components/TaskForm.js [client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$TasksList$2e$js__$5b$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/frontend/components/TasksList.js [client] (ecmascript)");
@@ -2289,131 +2093,70 @@ var _s = __turbopack_context__.k.signature();
 ;
 ;
 ;
+;
 var __N_SSP = true;
 function Dashboard({ currentUser }) {
     _s();
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"])();
     const userId = currentUser?.id || 1;
-    // open/close settings modal (local UI state)
     const [settingsOpen, setSettingsOpen] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    // get global settings (from SettingsProvider)
-    // make sure pages/_app.js wraps the app with <SettingsProvider>
-    let settings = null;
+    let settings;
     try {
-        // useSettings will throw if not wrapped by provider — guard it so page still renders
-        const ctx = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$SettingsModal$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useSettings"])();
-        settings = ctx.settings;
-    } catch (e) {
-        // no provider — fallback
+        settings = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$SettingsModal$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useSettings"])().settings;
+    } catch  {
         settings = {
-            theme: 'light',
-            defaultDuration: 60
+            theme: 'dark'
         };
     }
-    // local theme state is driven by settings.theme (SettingsProvider already toggles document class,
-    // this effect keeps local theme in sync in case you want to use it here)
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "Dashboard.useEffect": ()=>{
-            if (!settings) return;
-            const theme = settings.theme || 'system';
-            if (theme === 'dark') document.documentElement.classList.add('dark');
-            else if (theme === 'light') document.documentElement.classList.remove('dark');
-            else {
-                // system
-                const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-                document.documentElement.classList.toggle('dark', isDark);
-            }
+            document.documentElement.classList.toggle('dark', settings.theme === 'dark');
         }
     }["Dashboard.useEffect"], [
-        settings?.theme
+        settings.theme
     ]);
     const [refreshKey, setRefreshKey] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(0);
-    // recommendations
     const [recs, setRecs] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
     const [hourly, setHourly] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(new Array(24).fill(0));
     const [avgSleepHours, setAvgSleepHours] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    const [loadingRecs, setLoadingRecs] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    // analytics
     const [dailyMap, setDailyMap] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])({});
     const [loadingAnalytics, setLoadingAnalytics] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    // notifications
     const [notifications, setNotifications] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])([]);
     const [showNotifs, setShowNotifs] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useState"])(false);
-    // UNIVERSAL SAFE JSON PARSER
     async function safeJSON(res) {
-        const text = await res.text();
         try {
-            return text ? JSON.parse(text) : {};
-        } catch (err) {
-            console.warn('Non-JSON from server:', text.slice(0, 500));
+            return await res.json();
+        } catch  {
             return {};
         }
     }
-    // LOAD RECOMMENDATIONS
     async function loadRecs() {
-        setLoadingRecs(true);
-        try {
-            const res = await fetch(`${__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$api$2e$js__$5b$client$5d$__$28$ecmascript$29$__["API_BASE"]}/api/ai/recommendations/${userId}`);
-            const json = await safeJSON(res);
-            setRecs(json.recommendations || json.recs || []);
-            setHourly(json.hourly || new Array(24).fill(0));
-            setAvgSleepHours(json.avgSleepHours ?? null);
-        } catch (err) {
-            console.error('loadRecs error', err);
-        } finally{
-            setLoadingRecs(false);
-        }
+        const res = await fetch(`${__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$api$2e$js__$5b$client$5d$__$28$ecmascript$29$__["API_BASE"]}/api/ai/recommendations/${userId}`);
+        const json = await safeJSON(res);
+        setRecs(json.recommendations || []);
+        setHourly(json.hourly || new Array(24).fill(0));
+        setAvgSleepHours(json.avgSleepHours ?? null);
     }
-    // LOAD ANALYTICS
     async function loadAnalytics() {
         setLoadingAnalytics(true);
-        try {
-            const res = await fetch(`${__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$api$2e$js__$5b$client$5d$__$28$ecmascript$29$__["API_BASE"]}/api/analytics/daily/${userId}?days=14`);
-            const json = await safeJSON(res);
-            setDailyMap(json || {});
-        } catch (err) {
-            console.error('loadAnalytics error', err);
-        } finally{
-            setLoadingAnalytics(false);
-        }
+        const res = await fetch(`${__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$api$2e$js__$5b$client$5d$__$28$ecmascript$29$__["API_BASE"]}/api/analytics/daily/${userId}?days=14`);
+        setDailyMap(await safeJSON(res));
+        setLoadingAnalytics(false);
     }
-    // LOAD NOTIFICATIONS
     async function loadNotifications() {
-        try {
-            const res = await fetch(`${__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$api$2e$js__$5b$client$5d$__$28$ecmascript$29$__["API_BASE"]}/api/notifications?user_id=${userId}`);
-            const json = await safeJSON(res);
-            if (Array.isArray(json)) setNotifications(json);
-            else setNotifications(json.rows || []);
-        } catch (err) {
-            console.error('loadNotifications error', err);
-            setNotifications([]);
-        }
+        const res = await fetch(`${__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$api$2e$js__$5b$client$5d$__$28$ecmascript$29$__["API_BASE"]}/api/notifications?user_id=${userId}`);
+        const json = await safeJSON(res);
+        setNotifications(Array.isArray(json) ? json : json.rows || []);
     }
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$index$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "Dashboard.useEffect": ()=>{
             loadRecs();
             loadAnalytics();
             loadNotifications();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         }
     }["Dashboard.useEffect"], [
         refreshKey
     ]);
-    // RUN SCHEDULER
-    async function runScheduler() {
-        try {
-            const res = await fetch(`${__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$api$2e$js__$5b$client$5d$__$28$ecmascript$29$__["API_BASE"]}/api/schedule/run/${userId}`, {
-                method: 'POST'
-            });
-            const json = await safeJSON(res);
-            alert(`Auto-scheduled ${json.scheduledCount || 0} tasks`);
-            setRefreshKey((k)=>k + 1);
-        } catch (err) {
-            console.error('runScheduler error', err);
-            alert('Scheduler failed');
-        }
-    }
-    const handleTaskCreated = ()=>setRefreshKey((k)=>k + 1);
     function toggleNotifs() {
         setShowNotifs((v)=>!v);
         if (!showNotifs) loadNotifications();
@@ -2425,12 +2168,12 @@ function Dashboard({ currentUser }) {
                     children: "AI Student Routine Optimizer"
                 }, void 0, false, {
                     fileName: "[project]/frontend/pages/index.js",
-                    lineNumber: 147,
+                    lineNumber: 86,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/frontend/pages/index.js",
-                lineNumber: 146,
+                lineNumber: 85,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$SettingsModal$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
@@ -2438,459 +2181,538 @@ function Dashboard({ currentUser }) {
                 onClose: ()=>setSettingsOpen(false)
             }, void 0, false, {
                 fileName: "[project]/frontend/pages/index.js",
-                lineNumber: 151,
+                lineNumber: 89,
                 columnNumber: 7
             }, this),
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-6",
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["motion"].div, {
+                initial: {
+                    opacity: 0
+                },
+                animate: {
+                    opacity: 1
+                },
+                className: "min-h-screen bg-[#05060f] text-slate-100",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("header", {
-                        className: "flex items-center justify-between mb-6",
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "flex items-center gap-4",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
-                                        src: __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$api$2e$js__$5b$client$5d$__$28$ecmascript$29$__["HERO_IMAGE_BACKEND"],
-                                        alt: "logo",
-                                        className: "w-14 h-14 object-cover rounded-lg shadow"
-                                    }, void 0, false, {
-                                        fileName: "[project]/frontend/pages/index.js",
-                                        lineNumber: 160,
-                                        columnNumber: 13
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-cyan-500/20",
+                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "max-w-7xl mx-auto px-6 py-4 flex justify-between items-center relative",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "flex gap-4 items-center",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
+                                            src: __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$api$2e$js__$5b$client$5d$__$28$ecmascript$29$__["HERO_IMAGE_BACKEND"],
+                                            className: "w-12 h-12 rounded-xl shadow-md"
+                                        }, void 0, false, {
+                                            fileName: "[project]/frontend/pages/index.js",
+                                            lineNumber: 100,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            children: [
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
+                                                    className: "text-xl font-semibold text-cyan-300",
+                                                    children: "AI Routine Optimizer"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/frontend/pages/index.js",
+                                                    lineNumber: 105,
+                                                    columnNumber: 17
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                    className: "text-xs text-slate-400",
+                                                    children: "Smart scheduling & insights"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/frontend/pages/index.js",
+                                                    lineNumber: 108,
+                                                    columnNumber: 17
+                                                }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/frontend/pages/index.js",
+                                            lineNumber: 104,
+                                            columnNumber: 15
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/frontend/pages/index.js",
+                                    lineNumber: 99,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    className: "flex gap-2",
+                                    children: [
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(HeaderButton, {
+                                            label: "Notifications",
+                                            onClick: toggleNotifs
+                                        }, void 0, false, {
+                                            fileName: "[project]/frontend/pages/index.js",
+                                            lineNumber: 115,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(HeaderButton, {
+                                            label: "Settings",
+                                            onClick: ()=>setSettingsOpen(true)
+                                        }, void 0, false, {
+                                            fileName: "[project]/frontend/pages/index.js",
+                                            lineNumber: 116,
+                                            columnNumber: 15
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(HeaderButton, {
+                                            label: "Logout",
+                                            danger: true,
+                                            onClick: ()=>router.push('/logout')
+                                        }, void 0, false, {
+                                            fileName: "[project]/frontend/pages/index.js",
+                                            lineNumber: 117,
+                                            columnNumber: 15
+                                        }, this)
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/frontend/pages/index.js",
+                                    lineNumber: 114,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$components$2f$AnimatePresence$2f$index$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["AnimatePresence"], {
+                                    children: showNotifs && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["motion"].div, {
+                                        initial: {
+                                            opacity: 0,
+                                            y: -12
+                                        },
+                                        animate: {
+                                            opacity: 1,
+                                            y: 0
+                                        },
+                                        exit: {
+                                            opacity: 0,
+                                            y: -12
+                                        },
+                                        className: "absolute right-6 top-16 w-80 rounded-xl bg-[#0b1220]/95   border border-cyan-600/30 shadow-xl p-4 z-50",
                                         children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
-                                                className: "text-2xl font-bold",
-                                                children: "AI Student Routine Optimizer"
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
+                                                className: "text-cyan-200 font-semibold mb-2",
+                                                children: "Notifications"
+                                            }, void 0, false, {
+                                                fileName: "[project]/frontend/pages/index.js",
+                                                lineNumber: 134,
+                                                columnNumber: 19
+                                            }, this),
+                                            notifications.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                className: "text-sm text-slate-400",
+                                                children: "No notifications"
+                                            }, void 0, false, {
+                                                fileName: "[project]/frontend/pages/index.js",
+                                                lineNumber: 138,
+                                                columnNumber: 21
+                                            }, this) : notifications.map((n)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "border-b border-slate-700 py-2 last:border-none",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "text-sm",
+                                                            children: n.title || n.body
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/frontend/pages/index.js",
+                                                            lineNumber: 145,
+                                                            columnNumber: 25
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "text-xs text-slate-400",
+                                                            children: new Date(n.created_at).toLocaleString()
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/frontend/pages/index.js",
+                                                            lineNumber: 146,
+                                                            columnNumber: 25
+                                                        }, this)
+                                                    ]
+                                                }, n.id, true, {
+                                                    fileName: "[project]/frontend/pages/index.js",
+                                                    lineNumber: 141,
+                                                    columnNumber: 23
+                                                }, this))
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/frontend/pages/index.js",
+                                        lineNumber: 127,
+                                        columnNumber: 17
+                                    }, this)
+                                }, void 0, false, {
+                                    fileName: "[project]/frontend/pages/index.js",
+                                    lineNumber: 125,
+                                    columnNumber: 13
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/frontend/pages/index.js",
+                            lineNumber: 98,
+                            columnNumber: 11
+                        }, this)
+                    }, void 0, false, {
+                        fileName: "[project]/frontend/pages/index.js",
+                        lineNumber: 97,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
+                        className: "max-w-7xl mx-auto px-6 py-10 space-y-10",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
+                                className: "grid md:grid-cols-3 gap-6",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(GlassCard, {
+                                        className: "md:col-span-2",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                                className: "section-title",
+                                                children: "AI Insights"
+                                            }, void 0, false, {
+                                                fileName: "[project]/frontend/pages/index.js",
+                                                lineNumber: 164,
+                                                columnNumber: 15
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["motion"].div, {
+                                                initial: "hidden",
+                                                animate: "show",
+                                                variants: {
+                                                    show: {
+                                                        transition: {
+                                                            staggerChildren: 0.07
+                                                        }
+                                                    }
+                                                },
+                                                className: "grid sm:grid-cols-2 gap-4 mt-4",
+                                                children: recs.map((r, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["motion"].div, {
+                                                        variants: {
+                                                            hidden: {
+                                                                opacity: 0,
+                                                                y: 10
+                                                            },
+                                                            show: {
+                                                                opacity: 1,
+                                                                y: 0
+                                                            }
+                                                        },
+                                                        className: "insight-card",
+                                                        children: r
+                                                    }, i, false, {
+                                                        fileName: "[project]/frontend/pages/index.js",
+                                                        lineNumber: 173,
+                                                        columnNumber: 19
+                                                    }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/frontend/pages/index.js",
                                                 lineNumber: 166,
                                                 columnNumber: 15
                                             }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                className: "text-sm text-gray-500 dark:text-gray-400",
-                                                children: "Smart scheduling + personalized recommendations"
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/pages/index.js",
-                                                lineNumber: 167,
-                                                columnNumber: 15
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/frontend/pages/index.js",
-                                        lineNumber: 165,
-                                        columnNumber: 13
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/frontend/pages/index.js",
-                                lineNumber: 159,
-                                columnNumber: 11
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "flex items-center gap-3",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                        onClick: toggleNotifs,
-                                        className: "px-3 py-2 border rounded",
-                                        children: "Notifications"
-                                    }, void 0, false, {
-                                        fileName: "[project]/frontend/pages/index.js",
-                                        lineNumber: 174,
-                                        columnNumber: 13
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                        onClick: ()=>setSettingsOpen(true),
-                                        className: "px-3 py-2 border rounded",
-                                        children: "Settings"
-                                    }, void 0, false, {
-                                        fileName: "[project]/frontend/pages/index.js",
-                                        lineNumber: 179,
-                                        columnNumber: 13
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                        onClick: ()=>router.push('/logout'),
-                                        className: "px-3 py-2 border rounded text-red-600",
-                                        children: "Logout"
-                                    }, void 0, false, {
-                                        fileName: "[project]/frontend/pages/index.js",
-                                        lineNumber: 183,
-                                        columnNumber: 13
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                        onClick: ()=>window.scrollTo({
-                                                top: document.body.scrollHeight,
-                                                behavior: 'smooth'
-                                            }),
-                                        className: "px-4 py-2 bg-indigo-600 text-white rounded",
-                                        children: "Create Task"
-                                    }, void 0, false, {
-                                        fileName: "[project]/frontend/pages/index.js",
-                                        lineNumber: 190,
-                                        columnNumber: 13
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/frontend/pages/index.js",
-                                lineNumber: 173,
-                                columnNumber: 11
-                            }, this)
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/frontend/pages/index.js",
-                        lineNumber: 158,
-                        columnNumber: 9
-                    }, this),
-                    showNotifs && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "absolute right-6 top-20 bg-white dark:bg-gray-800 shadow rounded p-4 w-80 z-50",
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                className: "font-semibold mb-2",
-                                children: "Notifications"
-                            }, void 0, false, {
-                                fileName: "[project]/frontend/pages/index.js",
-                                lineNumber: 202,
-                                columnNumber: 13
-                            }, this),
-                            notifications.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                className: "text-sm text-gray-500",
-                                children: "No notifications"
-                            }, void 0, false, {
-                                fileName: "[project]/frontend/pages/index.js",
-                                lineNumber: 204,
-                                columnNumber: 15
-                            }, this) : notifications.map((n)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                    className: "border-b pb-2 mb-2",
-                                    children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "text-sm",
-                                            children: n.title || n.body
-                                        }, void 0, false, {
-                                            fileName: "[project]/frontend/pages/index.js",
-                                            lineNumber: 208,
-                                            columnNumber: 19
-                                        }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "text-xs text-gray-400",
-                                            children: new Date(n.created_at).toLocaleString()
-                                        }, void 0, false, {
-                                            fileName: "[project]/frontend/pages/index.js",
-                                            lineNumber: 209,
-                                            columnNumber: 19
-                                        }, this)
-                                    ]
-                                }, n.id, true, {
-                                    fileName: "[project]/frontend/pages/index.js",
-                                    lineNumber: 207,
-                                    columnNumber: 17
-                                }, this))
-                        ]
-                    }, void 0, true, {
-                        fileName: "[project]/frontend/pages/index.js",
-                        lineNumber: 201,
-                        columnNumber: 11
-                    }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
-                        className: "grid grid-cols-1 lg:grid-cols-3 gap-6",
-                        children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
-                                className: "lg:col-span-2 space-y-6",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "bg-white dark:bg-gray-800 p-6 rounded-lg shadow",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                                className: "text-lg font-semibold mb-2",
-                                                children: [
-                                                    "Recommendations ",
-                                                    loadingRecs && '(loading...)'
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/frontend/pages/index.js",
-                                                lineNumber: 223,
-                                                columnNumber: 15
-                                            }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "grid grid-cols-1 md:grid-cols-2 gap-3",
-                                                children: recs.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                    className: "text-sm text-gray-500",
-                                                    children: "No recommendations yet"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/frontend/pages/index.js",
-                                                    lineNumber: 229,
-                                                    columnNumber: 19
-                                                }, this) : recs.map((r, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "p-3 bg-indigo-50 dark:bg-indigo-900 text-indigo-700 rounded-lg shadow-sm",
-                                                        children: r
-                                                    }, i, false, {
-                                                        fileName: "[project]/frontend/pages/index.js",
-                                                        lineNumber: 232,
-                                                        columnNumber: 21
-                                                    }, this))
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/pages/index.js",
-                                                lineNumber: 227,
-                                                columnNumber: 15
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "mt-4",
+                                                className: "mt-6",
                                                 children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "h-24 flex items-end gap-1",
-                                                        children: hourly.map((v, i)=>{
-                                                            const max = Math.max(...hourly, 1);
-                                                            return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                                title: `${i}:00 = ${v} pts`,
-                                                                className: "w-1 bg-indigo-300",
-                                                                style: {
-                                                                    height: `${v / max * 100}%`
-                                                                }
-                                                            }, i, false, {
-                                                                fileName: "[project]/frontend/pages/index.js",
-                                                                lineNumber: 244,
-                                                                columnNumber: 28
-                                                            }, this);
-                                                        })
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(MiniChart, {
+                                                        hourly: hourly
                                                     }, void 0, false, {
                                                         fileName: "[project]/frontend/pages/index.js",
-                                                        lineNumber: 241,
+                                                        lineNumber: 187,
                                                         columnNumber: 17
                                                     }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "text-xs text-gray-500 mt-1",
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                        className: "text-xs mt-2 text-slate-400",
                                                         children: [
                                                             "Avg Sleep: ",
-                                                            avgSleepHours ? avgSleepHours.toFixed(1) + ' hrs' : '-'
+                                                            avgSleepHours?.toFixed(1) || '--',
+                                                            " hrs"
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/frontend/pages/index.js",
-                                                        lineNumber: 247,
+                                                        lineNumber: 188,
                                                         columnNumber: 17
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/frontend/pages/index.js",
-                                                lineNumber: 240,
+                                                lineNumber: 186,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/frontend/pages/index.js",
-                                        lineNumber: 222,
+                                        lineNumber: 163,
                                         columnNumber: 13
                                     }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "bg-white dark:bg-gray-800 p-6 rounded-lg shadow",
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(GlassCard, {
                                         children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
-                                                className: "text-lg font-semibold mb-4",
-                                                children: "Tasks & Scheduling"
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/pages/index.js",
-                                                lineNumber: 255,
-                                                columnNumber: 15
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "grid grid-cols-1 md:grid-cols-2 gap-6",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$TaskForm$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
-                                                        userId: userId,
-                                                        onCreated: handleTaskCreated
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/frontend/pages/index.js",
-                                                        lineNumber: 257,
-                                                        columnNumber: 17
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$TasksList$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
-                                                        userId: userId,
-                                                        refreshKey: refreshKey
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/frontend/pages/index.js",
-                                                        lineNumber: 258,
-                                                        columnNumber: 17
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/frontend/pages/index.js",
-                                                lineNumber: 256,
-                                                columnNumber: 15
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/frontend/pages/index.js",
-                                        lineNumber: 254,
-                                        columnNumber: 13
-                                    }, this)
-                                ]
-                            }, void 0, true, {
-                                fileName: "[project]/frontend/pages/index.js",
-                                lineNumber: 220,
-                                columnNumber: 11
-                            }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("aside", {
-                                className: "space-y-6",
-                                children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "bg-white dark:bg-gray-800 p-6 rounded-lg shadow",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                className: "font-semibold mb-3",
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                                className: "section-title",
                                                 children: "Quick Actions"
                                             }, void 0, false, {
                                                 fileName: "[project]/frontend/pages/index.js",
-                                                lineNumber: 266,
-                                                columnNumber: 15
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                onClick: runScheduler,
-                                                className: "text-indigo-600 block text-left",
-                                                children: "Auto-schedule pending tasks"
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/pages/index.js",
-                                                lineNumber: 267,
+                                                lineNumber: 195,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                                 onClick: loadRecs,
-                                                className: "text-indigo-600 block text-left mt-2",
-                                                children: "Refresh recommendations"
+                                                className: "action-btn",
+                                                children: "Refresh AI Insights"
                                             }, void 0, false, {
                                                 fileName: "[project]/frontend/pages/index.js",
-                                                lineNumber: 268,
-                                                columnNumber: 15
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                onClick: ()=>alert('Export not implemented'),
-                                                className: "text-indigo-600 block text-left mt-2",
-                                                children: "Export logs"
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/pages/index.js",
-                                                lineNumber: 269,
+                                                lineNumber: 196,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/frontend/pages/index.js",
-                                        lineNumber: 265,
-                                        columnNumber: 13
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "bg-white dark:bg-gray-800 p-6 rounded-lg shadow",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                className: "font-semibold mb-3",
-                                                children: "Weekly Activity"
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/pages/index.js",
-                                                lineNumber: 273,
-                                                columnNumber: 15
-                                            }, this),
-                                            loadingAnalytics ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                className: "text-sm text-gray-500",
-                                                children: "Loading..."
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/pages/index.js",
-                                                lineNumber: 274,
-                                                columnNumber: 35
-                                            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$MiniBarChart$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
-                                                data: dailyMap
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/pages/index.js",
-                                                lineNumber: 274,
-                                                columnNumber: 89
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/frontend/pages/index.js",
-                                        lineNumber: 272,
-                                        columnNumber: 13
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "bg-white dark:bg-gray-800 p-6 rounded-lg shadow",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h4", {
-                                                className: "font-semibold mb-3",
-                                                children: "Tips"
-                                            }, void 0, false, {
-                                                fileName: "[project]/frontend/pages/index.js",
-                                                lineNumber: 278,
-                                                columnNumber: 15
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
-                                                className: "text-sm text-gray-600 dark:text-gray-300 space-y-2",
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
-                                                        children: "✓ Add deadlines for better scheduling"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/frontend/pages/index.js",
-                                                        lineNumber: 280,
-                                                        columnNumber: 17
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
-                                                        children: "✓ Log study sessions for better recommendations"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/frontend/pages/index.js",
-                                                        lineNumber: 281,
-                                                        columnNumber: 17
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
-                                                        children: "✓ Sleep logs improve your AI insights"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/frontend/pages/index.js",
-                                                        lineNumber: 282,
-                                                        columnNumber: 17
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/frontend/pages/index.js",
-                                                lineNumber: 279,
-                                                columnNumber: 15
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/frontend/pages/index.js",
-                                        lineNumber: 277,
+                                        lineNumber: 194,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/frontend/pages/index.js",
-                                lineNumber: 264,
+                                lineNumber: 162,
+                                columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
+                                className: "grid md:grid-cols-2 gap-6",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(GlassCard, {
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                                className: "section-title",
+                                                children: "Create Task"
+                                            }, void 0, false, {
+                                                fileName: "[project]/frontend/pages/index.js",
+                                                lineNumber: 205,
+                                                columnNumber: 15
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$TaskForm$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                                                userId: userId,
+                                                onCreated: ()=>setRefreshKey((k)=>k + 1)
+                                            }, void 0, false, {
+                                                fileName: "[project]/frontend/pages/index.js",
+                                                lineNumber: 206,
+                                                columnNumber: 15
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/frontend/pages/index.js",
+                                        lineNumber: 204,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(GlassCard, {
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                                className: "section-title",
+                                                children: "Your Tasks"
+                                            }, void 0, false, {
+                                                fileName: "[project]/frontend/pages/index.js",
+                                                lineNumber: 213,
+                                                columnNumber: 15
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$TasksList$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                                                userId: userId,
+                                                refreshKey: refreshKey
+                                            }, void 0, false, {
+                                                fileName: "[project]/frontend/pages/index.js",
+                                                lineNumber: 214,
+                                                columnNumber: 15
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/frontend/pages/index.js",
+                                        lineNumber: 212,
+                                        columnNumber: 13
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/frontend/pages/index.js",
+                                lineNumber: 203,
+                                columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("section", {
+                                className: "grid md:grid-cols-3 gap-6",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(GlassCard, {
+                                        className: "md:col-span-2",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                                className: "section-title",
+                                                children: "Weekly Activity"
+                                            }, void 0, false, {
+                                                fileName: "[project]/frontend/pages/index.js",
+                                                lineNumber: 221,
+                                                columnNumber: 15
+                                            }, this),
+                                            loadingAnalytics ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                                className: "text-sm text-slate-400",
+                                                children: "Loading…"
+                                            }, void 0, false, {
+                                                fileName: "[project]/frontend/pages/index.js",
+                                                lineNumber: 223,
+                                                columnNumber: 17
+                                            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$components$2f$MiniBarChart$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"], {
+                                                data: dailyMap
+                                            }, void 0, false, {
+                                                fileName: "[project]/frontend/pages/index.js",
+                                                lineNumber: 225,
+                                                columnNumber: 17
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/frontend/pages/index.js",
+                                        lineNumber: 220,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(GlassCard, {
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                                                className: "section-title",
+                                                children: "Study Tips"
+                                            }, void 0, false, {
+                                                fileName: "[project]/frontend/pages/index.js",
+                                                lineNumber: 230,
+                                                columnNumber: 15
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
+                                                className: "text-sm space-y-2 text-slate-300",
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
+                                                        children: "• Sleep consistency boosts focus"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/frontend/pages/index.js",
+                                                        lineNumber: 232,
+                                                        columnNumber: 17
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
+                                                        children: "• Add deadlines for smarter planning"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/frontend/pages/index.js",
+                                                        lineNumber: 233,
+                                                        columnNumber: 17
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
+                                                        children: "• Track sessions daily"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/frontend/pages/index.js",
+                                                        lineNumber: 234,
+                                                        columnNumber: 17
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/frontend/pages/index.js",
+                                                lineNumber: 231,
+                                                columnNumber: 15
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/frontend/pages/index.js",
+                                        lineNumber: 229,
+                                        columnNumber: 13
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/frontend/pages/index.js",
+                                lineNumber: 219,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/frontend/pages/index.js",
-                        lineNumber: 219,
+                        lineNumber: 159,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("footer", {
-                        className: "mt-10 text-center text-xs text-gray-500",
-                        children: "Built with Next.js + Tailwind — Student Optimizer"
+                        className: "text-center text-xs text-slate-500 py-6",
+                        children: "Built with Next.js • Tailwind • Framer Motion"
                     }, void 0, false, {
                         fileName: "[project]/frontend/pages/index.js",
-                        lineNumber: 288,
+                        lineNumber: 240,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/frontend/pages/index.js",
-                lineNumber: 156,
+                lineNumber: 91,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true);
 }
-_s(Dashboard, "u6ouuCgbDXTX5X/jjjNDpjUM/gg=", false, function() {
+_s(Dashboard, "W5Ak/ARQ7TZFrqU/W4Df4FFB3Dk=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$next$2f$router$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useRouter"]
     ];
 });
 _c = Dashboard;
-var _c;
+/* ================= UI HELPERS ================= */ function HeaderButton({ label, onClick, danger }) {
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["motion"].button, {
+        whileHover: {
+            scale: 1.05
+        },
+        whileTap: {
+            scale: 0.95
+        },
+        onClick: onClick,
+        className: `px-3 py-1.5 rounded-md border text-sm transition ${danger ? 'border-red-500/40 text-red-400 hover:bg-red-500/10' : 'border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/10'}`,
+        children: label
+    }, void 0, false, {
+        fileName: "[project]/frontend/pages/index.js",
+        lineNumber: 252,
+        columnNumber: 5
+    }, this);
+}
+_c1 = HeaderButton;
+function GlassCard({ children, className = '' }) {
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["motion"].div, {
+        initial: {
+            opacity: 0,
+            y: 20
+        },
+        animate: {
+            opacity: 1,
+            y: 0
+        },
+        className: `rounded-2xl p-6 bg-white/5 border border-white/10
+      backdrop-blur-xl shadow-lg ${className}`,
+        children: children
+    }, void 0, false, {
+        fileName: "[project]/frontend/pages/index.js",
+        lineNumber: 269,
+        columnNumber: 5
+    }, this);
+}
+_c2 = GlassCard;
+function MiniChart({ hourly }) {
+    const max = Math.max(...hourly, 1);
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        className: "flex items-end gap-1 h-24",
+        children: hourly.map((v, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$frontend$2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$render$2f$components$2f$motion$2f$proxy$2e$mjs__$5b$client$5d$__$28$ecmascript$29$__["motion"].div, {
+                initial: {
+                    height: 0
+                },
+                animate: {
+                    height: `${v / max * 100}%`
+                },
+                transition: {
+                    duration: 0.5,
+                    delay: i * 0.015
+                },
+                className: "w-1 rounded-t",
+                style: {
+                    background: 'linear-gradient(180deg,#38bdf8,#7c3aed)'
+                }
+            }, i, false, {
+                fileName: "[project]/frontend/pages/index.js",
+                lineNumber: 285,
+                columnNumber: 9
+            }, this))
+    }, void 0, false, {
+        fileName: "[project]/frontend/pages/index.js",
+        lineNumber: 283,
+        columnNumber: 5
+    }, this);
+}
+_c3 = MiniChart;
+var _c, _c1, _c2, _c3;
 __turbopack_context__.k.register(_c, "Dashboard");
+__turbopack_context__.k.register(_c1, "HeaderButton");
+__turbopack_context__.k.register(_c2, "GlassCard");
+__turbopack_context__.k.register(_c3, "MiniChart");
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
